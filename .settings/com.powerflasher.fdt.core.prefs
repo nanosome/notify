@@ -1,6 +1,6 @@
-#Wed Oct 06 10:29:56 JST 2010
+#Wed Oct 06 12:49:55 JST 2010
 com.powerflasher.fdt.core.CompatiblePlayers=External_SWF_Viewer\:Browser\:Standalone_Flash_Player
-com.powerflasher.fdt.core.CompilerArguments=-target-player\={playerVersion}\n-library-path {flexSDK}/frameworks/locale/en_US
+com.powerflasher.fdt.core.CompilerArguments=-target-player\={playerVersion}\n-library-path {flexSDK}/frameworks/locale/en_US\n-compiler.keep-as3-metadata Observable\n-static-rsls\=true
 com.powerflasher.fdt.core.DefaultOutputFolder=bin
 com.powerflasher.fdt.core.DefaultPlayer=External_SWF_Viewer
 com.powerflasher.fdt.core.Language=AS3

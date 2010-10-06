@@ -1,0 +1,6 @@
+#
+# !!! Rename this file to build.properties and fill in proper paths
+#
+flex.sdkv4.1=C:\\Program\ Files\\Adobe\\flex_sdk_4.1
+svnkit=false
+javahl=false

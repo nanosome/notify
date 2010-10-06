@@ -1,6 +1,5 @@
 package nanosome.notify.bind {
 	import nanosome.notify.observe.IPropertyObserver;
-	
 	import nanosome.util.EnterFrame;
 
 	import org.mockito.integrations.flexunit3.MockitoTestCase;
@@ -55,8 +54,8 @@ package nanosome.notify.bind {
 			inOrder().verify().that( _mock.onPropertyChange( _dynamicInstance, "bindable", undefined, _arr1 ) );
 			inOrder().verify().that( _mock.onPropertyChange( _dynamicInstance, "observable", undefined, _arr2 ) );
 			
-			_obj.test = true;
-			_obj.obj = { fun: "hi" };
+			_obj["test"] = true;
+			_obj["obj"]  = { fun: "hi" };
 			
 			async( verifyCalled1 );
 			EnterFrame.add( callBack );
@@ -69,10 +68,9 @@ package nanosome.notify.bind {
 		public function testWatchModification(): void {
 			var obj: Object = {};
 			watch( _dynamicInstance, "anything" ).value = obj;
-			assertEquals( _dynamicInstance.anything, obj );
+			assertEquals( _dynamicInstance["anything"], obj );
 			watch( _dynamicInstance, "anything.something" ).value = "Super!";
-			assertEquals( obj.something, "Super!" );
-			var exceptThrown: Boolean = false;
+			assertEquals( obj["something"], "Super!" );
 			watch( _dynamicInstance, "nothing.something" ).value = "What?";
 			assertFalse( watch( _dynamicInstance, "nothing.something" ).setValue( "What?" ) );
 		}
@@ -96,7 +94,7 @@ package nanosome.notify.bind {
 			_dynamicInstance.observable.push( "1" );
 			_dynamicInstance.observable.push( "2" );
 			
-			_obj.obj.fun = "a";
+			_obj["obj"]["fun"] = "a";
 			async( verifyCalled2 );
 		}
 		
@@ -104,7 +102,7 @@ package nanosome.notify.bind {
 			inOrder().verify().that( _mock.onPropertyChange( _dynamicInstance, "bindable.1", undefined, "c" ) );
 			inOrder().verify().that( _mock.onPropertyChange( _dynamicInstance, "observable.0", undefined, "1" ) );
 			inOrder().verify().that( _mock.onPropertyChange( _obj, "obj.fun", "hi", "a") );
-			_obj.obj = null;
+			_obj["obj"] = null;
 			
 			_dynamicInstance.bindable = [ "f", "g" ];
 			

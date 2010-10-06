@@ -5,4 +5,6 @@
     <AS3Classpath generateProblems="true" sdkBased="false" type="source" useAsSharedCode="false">src</AS3Classpath>
     <AS3Classpath generateProblems="true" sdkBased="false" type="source" useAsSharedCode="false">src_test</AS3Classpath>
     <AS3Classpath generateProblems="false" sdkBased="false" type="lib" useAsSharedCode="false">lib/flexunit-4.0.0.swc</AS3Classpath>
+    <AS3Classpath generateProblems="false" sdkBased="false" type="lib" useAsSharedCode="false">lib/nanosome-util/nanosome-util.swc</AS3Classpath>
+    <AS3Classpath generateProblems="false" sdkBased="false" type="lib" useAsSharedCode="false">lib/mockito-1.4M2.swc</AS3Classpath>
 </AS3Classpath>

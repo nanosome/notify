@@ -1,9 +1,9 @@
 package nanosome.notify.bind.map {
-	
+	import nanosome.notify.field.Field;
 	import nanosome.util.access.Accessor;
-	import flex.lang.reflect.Field;
 
 	import flash.utils.Dictionary;
+	
 	/**
  * @author Martin Heidegger mh@leichtgewicht.at
  */
