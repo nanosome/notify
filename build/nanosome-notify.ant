@@ -8,4 +8,8 @@
 	<property file="project.properties"/>
 	
 	<import file="global/global.ant" />
+	
+	<target name="copy-dependencies-to-build-path">
+		<copy file="../lib/nanosome-util/nanosome-util.swc" tofile="${lib.path}nanosome-util.${DSTAMP}.${build.version}.swc"/>
+	</target>
 </project>
