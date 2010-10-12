@@ -1,7 +1,9 @@
 package nanosome.notify.bind.map {
-	
 	import nanosome.util.access.Accessor;
 	import nanosome.util.access.accessFor;
+	
+	
+	
 
 	/**
 	 * Fills the <code>target</code> instance will all properties of the <code>source</code>
@@ -25,7 +27,7 @@ package nanosome.notify.bind.map {
 			sourceAccess = accessFor( source );
 		}
 		targetAccess.writeAll( target,
-			sourceAccess.readMapped( source, CLASS_MAPPINGS.getMapping( sourceAccess, targetAccess ).propertyMap )
+			sourceAccess.readMapped( source, CLASS_MAPPINGS.getMapping( sourceAccess, targetAccess ) )
 		);
 	}
 }

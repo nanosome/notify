@@ -1,5 +1,6 @@
 // @license@
 package nanosome.notify.observe {
+	import nanosome.util.access.Changes;
 	import nanosome.util.ChangedPropertyNode;
 	import nanosome.util.EnterFrame;
 	import nanosome.util.ILockable;
@@ -7,8 +8,9 @@ package nanosome.notify.observe {
 	import nanosome.util.access.accessFor;
 	import nanosome.util.list.List;
 	import nanosome.util.list.ListNode;
-	import nanosome.util.pool.InstancePool;
-	import nanosome.util.pools;
+	import nanosome.util.pool.IInstancePool;
+	import nanosome.util.pool.poolFor;
+	import nanosome.util.pool.pools;
 
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
@@ -26,8 +28,8 @@ package nanosome.notify.observe {
 		/**
 		 * Pool of nodes to be used for nodes that changed.
 		 */
-		private static const _changeNodePool: InstancePool =
-				pools.getOrCreate( ChangedPropertyNode );
+		private static const _changeNodePool: IInstancePool =
+				poolFor( ChangedPropertyNode );
 		
 		/**
 		 * Target to which this broadcaster belongs to.
@@ -161,10 +163,25 @@ package nanosome.notify.observe {
 		}
 		
 		private function checkNonEventSending(): void {
-			var changes: ChangedPropertyNode = _accessor.compareWithStorage( _target, _storage );
+			var changes: Changes = _accessor.updateStorage( _target, _storage );
 			if( changes ) {
-				notifyManyPropertiesChanged( changes );
+				notifyManyPropertiesChanged( changesToNodes( changes ) );
+				Changes.POOL.returnInstance( changes );
 			}
+		}
+		
+		private function changesToNodes( changes: Changes ): ChangedPropertyNode {
+			var lastChange: ChangedPropertyNode;
+			var firstChange: ChangedPropertyNode;
+			for( var field: String in changes ) {
+				var change: ChangedPropertyNode = ChangedPropertyNode.POOL.getOrCreate();
+				change.name = field;
+				change.newValue = changes.newValues[ field ];
+				change.oldValue = changes.oldValues[ field ];
+				lastChange = change.addTo( lastChange );
+				if( !firstChange ) firstChange = lastChange;
+			}
+			return firstChange;
 		}
 		
 		private function onPropertyChange( event: Event ): void {
@@ -372,10 +389,16 @@ package nanosome.notify.observe {
 			_changeMap = null;
 		}
 		
-		public function addPropertyObserver( observer: IPropertyObserver ): Boolean {
-			return add( observer );
+		/**
+		 * @inheritDoc
+		 */
+		public function addPropertyObserver( observer: IPropertyObserver, weak: Boolean = false ): Boolean {
+			return add( observer, weak );
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function removePropertyObserver( observer: IPropertyObserver ): Boolean {
 			return remove( observer );
 		}

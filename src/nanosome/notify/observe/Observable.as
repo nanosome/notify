@@ -84,8 +84,8 @@ package nanosome.notify.observe {
 		/**
 		 * @inheritDoc
 		 */
-		public final function addPropertyObserver( observer: IPropertyObserver ): Boolean {
-			return _broadcaster.add( observer );
+		public final function addPropertyObserver( observer: IPropertyObserver, weak: Boolean = false ): Boolean {
+			return _broadcaster.add( observer, weak );
 		}
 		
 		/**

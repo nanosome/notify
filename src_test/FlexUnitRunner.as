@@ -1,4 +1,5 @@
 package {
+	import nanosome.notify.connect.DynamicConnectionTest;
 	import nanosome.notify.bind.BinderTest;
 	import nanosome.notify.bind.WatchTest;
 	import nanosome.notify.field.FieldTest;
@@ -27,7 +28,8 @@ package {
 				BinderTest,
 				WatchTest,
 				FieldTest,
-				PropertyBroadcasterTest
+				PropertyBroadcasterTest,
+				DynamicConnectionTest
 			] );
 		}
 	}

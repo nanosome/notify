@@ -51,9 +51,10 @@ package nanosome.notify.observe {
 		 * Adds a observer to the list of observers.
 		 * 
 		 * @param observer Observer that should be triggered when changes occur.
+		 * @param weak if the observer should be added weak
 		 * @return <code>true</code> if the observer has not been added before
 		 */
-		function addPropertyObserver( observer: IPropertyObserver ): Boolean;
+		function addPropertyObserver( observer: IPropertyObserver, weak: Boolean = false ): Boolean;
 		
 		/**
 		 * Removes a observer from the list of observers.

@@ -1,10 +1,10 @@
 // @license@
 package nanosome.notify.field.impl {
-	import nanosome.notify.field.IFieldObserver;
 	import nanosome.notify.field.IField;
+	import nanosome.notify.field.IFieldObserver;
 	import nanosome.util.list.List;
 	import nanosome.util.list.ListNode;
-	import nanosome.util.pools;
+	import nanosome.util.pool.poolFor;
 	
 	/**
 	 * @author mh
@@ -14,7 +14,7 @@ package nanosome.notify.field.impl {
 		private var _first: ObserverListNode;
 		private var _next: ObserverListNode;
 		public function ObserverList() {
-			super( pools.getOrCreate( ObserverListNode ) );
+			super( poolFor( ObserverListNode ) );
 		}
 		
 		override protected function get first(): ListNode {

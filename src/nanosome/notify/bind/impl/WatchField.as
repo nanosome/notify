@@ -161,8 +161,8 @@ package nanosome.notify.bind.impl {
 			_broadcaster.locked = locked;
 		}
 		
-		public function addPropertyObserver( observer: IPropertyObserver ): Boolean {
-			if( _broadcaster.add( observer ) ) {
+		public function addPropertyObserver( observer: IPropertyObserver, weak: Boolean = false ): Boolean {
+			if( _broadcaster.add( observer, weak ) ) {
 				checkListeners();
 				return true;
 			}

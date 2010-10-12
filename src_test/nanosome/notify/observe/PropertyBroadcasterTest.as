@@ -1,10 +1,8 @@
 package nanosome.notify.observe {
-	
 	import nanosome.util.ChangedPropertyNode;
-	
 	import nanosome.util.UID;
-	import nanosome.util.pool.InstancePool;
-	import nanosome.util.pools;
+	import nanosome.util.pool.IInstancePool;
+	import nanosome.util.pool.poolFor;
 
 	import org.mockito.MockitoTestCase;
 
@@ -14,7 +12,7 @@ package nanosome.notify.observe {
 	public class PropertyBroadcasterTest extends MockitoTestCase implements IPropertyObserver {
 		
 		private var _broadcaster: PropertyBroadcaster;
-		private var _changeNodePool: InstancePool = pools.getOrCreate( ChangedPropertyNode);
+		private var _changeNodePool: IInstancePool = poolFor( ChangedPropertyNode);
 		private var _uid : uint = UID.next();
 		private var _lastManyProperties : Array;
 

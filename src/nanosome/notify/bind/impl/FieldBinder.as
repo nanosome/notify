@@ -1,10 +1,10 @@
 // @license@
 
 package nanosome.notify.bind.impl {
-	import nanosome.notify.field.IFieldObserver;
 	import nanosome.notify.field.IField;
-	import nanosome.util.pool.InstancePool;
-	import nanosome.util.pools;
+	import nanosome.notify.field.IFieldObserver;
+	import nanosome.util.pool.IInstancePool;
+	import nanosome.util.pool.poolFor;
 
 	import flash.utils.Dictionary;
 	
@@ -15,7 +15,7 @@ package nanosome.notify.bind.impl {
 	public class FieldBinder implements IFieldObserver {
 		
 		private const _relationMap: Dictionary = new Dictionary();
-		private const _listPool: InstancePool = pools.getOrCreate( FieldBindList );
+		private const _listPool: IInstancePool = poolFor( FieldBindList );
 		
 		public function bind( fieldA: IField, fieldB: IField, bidirectional: Boolean = true ): IField {
 			if( fieldA != null && fieldB != null ) {

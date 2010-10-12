@@ -1,11 +1,11 @@
 // @license@
 
 package nanosome.notify.bind.impl {
-	import nanosome.util.IUID;
 	import nanosome.notify.field.IField;
+	import nanosome.util.IUID;
 	import nanosome.util.list.UIDList;
 	import nanosome.util.list.UIDListNode;
-	import nanosome.util.pools;
+	import nanosome.util.pool.poolFor;
 	
 
 	/**
@@ -20,7 +20,7 @@ package nanosome.notify.bind.impl {
 		private var _master: IField;
 
 		public function FieldBindList() {
-			super( pools.getOrCreate( FieldBindListNode ) );
+			super( poolFor( FieldBindListNode ) );
 		}
 		
 		override public function add( content: IUID, weak: Boolean = false ): Boolean {

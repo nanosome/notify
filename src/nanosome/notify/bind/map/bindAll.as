@@ -3,10 +3,6 @@ package nanosome.notify.bind.map {
 	import nanosome.util.access.Accessor;
 	import nanosome.util.access.accessFor;
 	
-	
-	
-	
-	
 	/**
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 */
@@ -18,7 +14,7 @@ package nanosome.notify.bind.map {
 			CLASS_MAPPINGS.getMapping(
 				sourceAccessor || accessFor( source ),
 				targetAccessor || accessFor( target )
-			).propertyMap, bidirectional
+			), bidirectional
 		);
 	}
 }
