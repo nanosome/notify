@@ -17,6 +17,10 @@ package nanosome.notify.bind.impl {
 		private const _relationMap: Dictionary = new Dictionary();
 		private const _listPool: IInstancePool = poolFor( FieldBindList );
 		
+		public function FieldBinder() {
+			super();
+		}
+		
 		public function bind( fieldA: IField, fieldB: IField, bidirectional: Boolean = true ): IField {
 			if( fieldA != null && fieldB != null ) {
 				var relationsA: FieldBindList = _relationMap[ fieldA ];

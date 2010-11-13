@@ -1,0 +1,788 @@
+<flex-config>
+   <!-- benchmark: パフォーマンスベンチマークを出力します-->
+   <!-- benchmark usage:
+   <benchmark>boolean</benchmark>
+   -->
+   <compiler>
+      <!-- compiler.accessible: アクセス可能な SWF を生成します-->
+      <accessible>false</accessible>
+      <!-- compiler.actionscript-file-encoding: ActionScript ファイルのエンコーディングを指定します。AS3 ソースファイルに BOM がない場合、コンパイラーはこのファイルエンコーディングを使用します。-->
+      <!-- compiler.actionscript-file-encoding usage:
+      <actionscript-file-encoding>string</actionscript-file-encoding>
+      -->
+      <!-- compiler.allow-source-path-overlap: source-path エントリが別の source-path エントリのサブディレクトリであるかどうかを確認します。これにより、MXML コンポーネントのパッケージ名が明白になります。-->
+      <allow-source-path-overlap>false</allow-source-path-overlap>
+      <!-- compiler.as3: パフォーマンスを向上させ、エラー報告機能を強化するには、ActionScript 3 クラスに基づくオブジェクトモデルを使用してください。クラスに基づくオブジェクトモデルでは、ほとんどの組み込み関数はクラスの固定メソッドとして実装されます。-->
+      <as3>true</as3>
+      <!-- compiler.context-root: サービスチャンネルのエンドポイントの {context.root} トークンを置き換えるパス-->
+      <!-- compiler.context-root usage:
+      <context-root>context-path</context-root>
+      -->
+      <!-- compiler.debug: デバッグに適したムービーを生成します-->
+      <debug>false</debug>
+      <!-- compiler.defaults-css-files usage:
+      <defaults-css-files>
+         <filename>string</filename>
+         <filename>string</filename>
+      </defaults-css-files>
+      -->
+      <!-- compiler.defaults-css-url: デフォルトのスタイルシートの場所を定義します。このオプションを設定すると、 framework.swc ファイルにある defaults.css スタイルシートの暗黙的な使用がオーバーライドされます。-->
+      <!-- compiler.defaults-css-url usage:
+      <defaults-css-url>string</defaults-css-url>
+      -->
+      <!-- compiler.define: グローバル AS3 条件コンパイル定義を定義します (-define CONFIG::debugging tru、 または flex-config.xml 内の既存の定義に追加する場合の -define+=CONFIG::debugging,true など)-->
+      <!-- compiler.define usage:
+      <define>
+         <name>string</name>
+         <value>string</value>
+         <value>string</value>
+      </define>
+      -->
+      <!-- compiler.enable-runtime-design-layers usage:
+      <enable-runtime-design-layers>boolean</enable-runtime-design-layers>
+      -->
+      <!-- compiler.es: プロトタイププロパティを動的にオーバーライドできるようにするには、ECMAScript Edition 3 のプロトタイプに基づくオブジェクトモデルを使用してください。プロトタイプに基づくオブジェクトモデルでは、組み込み関数はプロトタイプオブジェクトの動的プロパティとして実装されます。-->
+      <es>false</es>
+      <extensions>
+         <!-- compiler.extensions.extension usage:
+         <extension>
+            <extension>string</extension>
+            <parameters>string</parameters>
+         </extension>
+         -->
+      </extensions>
+      <!-- compiler.external-library-path: コンパイル対象であるが、リンクからは除外される SWC ファイルまたはディレクトリの一覧-->
+      <external-library-path>
+         <path-element>C:\Users\mh\workspace\nanosome-notify\build\global\flex\libs\player\10.1\playerglobal.swc</path-element>
+      </external-library-path>
+      <fonts>
+         <!-- compiler.fonts.advanced-anti-aliasing: 埋め込みフォントの高度なアンチエイリアスを有効にして、小さいフォントを見やすくします。-->
+         <advanced-anti-aliasing>true</advanced-anti-aliasing>
+         <!-- compiler.fonts.flash-type: 埋め込みフォントの FlashType を有効にして、小さいフォントを見やすくする-->
+         <!-- compiler.fonts.flash-type usage:
+         <flash-type>boolean</flash-type>
+         -->
+         <languages>
+            <!-- compiler.fonts.languages.language-range: SWF に埋め込まれるフォントグリフの数を制限する範囲-->
+            <!-- compiler.fonts.languages.language-range usage:
+            <language-range>
+               <lang>string</lang>
+               <range>string</range>
+               <range>string</range>
+            </language-range>
+            -->
+         </languages>
+         <!-- compiler.fonts.local-font-paths usage:
+         <local-font-paths>
+            <path-element>string</path-element>
+            <path-element>string</path-element>
+         </local-font-paths>
+         -->
+         <!-- compiler.fonts.local-fonts-snapshot: このファイルには、flex2.tools.FontSnapshot によって生成されたシステムフォントデータが含まれています。-->
+         <local-fonts-snapshot>${flexlib}/localFonts.ser</local-fonts-snapshot>
+         <!-- compiler.fonts.managers: コンパイラーのフォントマネージャークラス、ポリシーの解決順-->
+         <managers>
+            <manager-class>flash.fonts.JREFontManager</manager-class>
+            <manager-class>flash.fonts.BatikFontManager</manager-class>
+         </managers>
+         <!-- compiler.fonts.max-cached-fonts: サーバーのキャッシュに保存するフォントの最大数を設定します。デフォルト値は 20 です。-->
+         <max-cached-fonts>20</max-cached-fonts>
+         <!-- compiler.fonts.max-glyphs-per-face: 各フォントについてサーバーにキャッシュできる文字のグリフアウトラインの最大数を設定します。デフォルト値は 1000 です。-->
+         <max-glyphs-per-face>1000</max-glyphs-per-face>
+      </fonts>
+      <!-- compiler.headless-server: Flex がディスプレイなしのサーバーで実行されている場合に設定されるフラグ-->
+      <!-- compiler.headless-server usage:
+      <headless-server>boolean</headless-server>
+      -->
+      <!-- compiler.include-libraries: SWF に完全にインクルードされるライブラリ (SWC) の一覧-->
+      <!-- compiler.include-libraries usage:
+      <include-libraries>
+         <library>string</library>
+         <library>string</library>
+      </include-libraries>
+      -->
+      <!-- compiler.incremental: インクリメンタルコンパイルを有効にします-->
+      <!-- compiler.incremental usage:
+      <incremental>boolean</incremental>
+      -->
+      <!-- compiler.isolate-styles: コンパイル後のアプリケーションまたはモジュールは、それ自身および自身の子に影響するスタイルのみを設定できます-->
+      <!-- compiler.isolate-styles usage:
+      <isolate-styles>boolean</isolate-styles>
+      -->
+      <!-- compiler.keep-all-type-selectors: 使用されていない CSS タイプセレクターの削除を無効にします-->
+      <!-- compiler.keep-all-type-selectors usage:
+      <keep-all-type-selectors>boolean</keep-all-type-selectors>
+      -->
+      <!-- compiler.keep-as3-metadata: SWF 内に指定されたメタデータを保持する-->
+      <keep-as3-metadata>
+         <name>Observable</name>
+      </keep-as3-metadata>
+      <!-- compiler.keep-generated-actionscript: MXML コンパイル時に生成された一時ソースファイルを保存します-->
+      <keep-generated-actionscript>false</keep-generated-actionscript>
+      <!-- compiler.library-path: SWC ファイルまたは SWC ファイルを格納するディレクトリの一覧-->
+      <!-- compiler.library-path usage:
+      <library-path>
+         <path-element>string</path-element>
+         <path-element>string</path-element>
+      </library-path>
+      -->
+      <!-- compiler.locale: 国際化用にロケールを指定します-->
+      <locale>
+         <locale-element>ja_JP</locale-element>
+      </locale>
+      <!-- compiler.minimum-supported-version usage:
+      <minimum-supported-version>string</minimum-supported-version>
+      -->
+      <mxml>
+         <!-- compiler.mxml.compatibility-version: 互換性のあるバージョンを指定します (compatibility-version=2.0.1 など)-->
+         <!-- compiler.mxml.compatibility-version usage:
+         <compatibility-version>version</compatibility-version>
+         -->
+         <!-- compiler.mxml.minimum-supported-version usage:
+         <minimum-supported-version>string</minimum-supported-version>
+         -->
+         <!-- compiler.mxml.qualified-type-selectors usage:
+         <qualified-type-selectors>boolean</qualified-type-selectors>
+         -->
+      </mxml>
+      <namespaces>
+         <!-- compiler.namespaces.namespace: MXML エレメントとして使用するためのコンポーネントのマニフェストに関連付ける URI を指定します-->
+         <!-- compiler.namespaces.namespace usage:
+         <namespace>
+            <uri>string</uri>
+            <manifest>string</manifest>
+         </namespace>
+         -->
+      </namespaces>
+      <!-- compiler.omit-trace-statements: trace ステートメントを省略するかどうかを切り替えます-->
+      <omit-trace-statements>true</omit-trace-statements>
+      <!-- compiler.optimize: リンク後の SWF の最適化を有効にします-->
+      <optimize>true</optimize>
+      <!-- compiler.report-invalid-styles-as-warnings: 無効なスタイルを警告として報告します-->
+      <!-- compiler.report-invalid-styles-as-warnings usage:
+      <report-invalid-styles-as-warnings>boolean</report-invalid-styles-as-warnings>
+      -->
+      <!-- compiler.services: Flex データサービス設定ファイルへのパス-->
+      <!-- compiler.services usage:
+      <services>filename</services>
+      -->
+      <!-- compiler.show-actionscript-warnings: 有効であるが部分的に正しくないコードを検出するモードで AS3 コンパイラーを実行します-->
+      <show-actionscript-warnings>true</show-actionscript-warnings>
+      <!-- compiler.show-binding-warnings: データバインディングコードから生成される警告を表示するかどうかを切り替えます-->
+      <show-binding-warnings>true</show-binding-warnings>
+      <!-- compiler.show-invalid-css-property-warnings: 無効な CSS プロパティに関する警告を報告するかどうかを切り替えます-->
+      <!-- compiler.show-invalid-css-property-warnings usage:
+      <show-invalid-css-property-warnings>boolean</show-invalid-css-property-warnings>
+      -->
+      <!-- compiler.show-shadowed-device-font-warnings: 埋め込みフォント名がデバイスフォント名に影響する場合に、警告を表示するかどうかを切り替えます-->
+      <show-shadowed-device-font-warnings>true</show-shadowed-device-font-warnings>
+      <!-- compiler.show-unused-type-selector-warnings: 使用されていない CSS タイプセレクターから生成される警告を表示するかどうかを切り替えます-->
+      <!-- compiler.show-unused-type-selector-warnings usage:
+      <show-unused-type-selector-warnings>boolean</show-unused-type-selector-warnings>
+      -->
+      <!-- compiler.source-path: ActionScript クラス階層のルートを形成するパスエレメントの一覧-->
+      <!-- compiler.source-path usage:
+      <source-path>
+         <path-element>string</path-element>
+         <path-element>string</path-element>
+      </source-path>
+      -->
+      <!-- compiler.strict: 厳密なエラーチェックモードで AS3 コンパイラーを実行します-->
+      <strict>true</strict>
+      <!-- compiler.theme: テーマとして適用する CSS または SWC ファイルの一覧-->
+      <theme>
+         <filename>${flexlib}/themes/Spark/spark.css</filename>
+      </theme>
+      <!-- compiler.use-resource-bundle-metadata: リソースバンドルがアプリケーションに含まれているかどうかを調べます。-->
+      <use-resource-bundle-metadata>false</use-resource-bundle-metadata>
+      <!-- compiler.verbose-stacktraces: デバッグ用にコールスタック情報を SWF に保存します-->
+      <verbose-stacktraces>false</verbose-stacktraces>
+      <!-- compiler.warn-array-tostring-changes: Array.toString() フォーマットは変更されました。-->
+      <!-- compiler.warn-array-tostring-changes usage:
+      <warn-array-tostring-changes>boolean</warn-array-tostring-changes>
+      -->
+      <!-- compiler.warn-assignment-within-conditional: 条件内の代入です。-->
+      <!-- compiler.warn-assignment-within-conditional usage:
+      <warn-assignment-within-conditional>boolean</warn-assignment-within-conditional>
+      -->
+      <!-- compiler.warn-bad-array-cast: 無効な Array キャスト演算である可能性があります。-->
+      <!-- compiler.warn-bad-array-cast usage:
+      <warn-bad-array-cast>boolean</warn-bad-array-cast>
+      -->
+      <!-- compiler.warn-bad-bool-assignment: ブール値が必要ですが、非ブール値が使用されています。-->
+      <!-- compiler.warn-bad-bool-assignment usage:
+      <warn-bad-bool-assignment>boolean</warn-bad-bool-assignment>
+      -->
+      <!-- compiler.warn-bad-date-cast: 無効な Date キャスト演算です。-->
+      <!-- compiler.warn-bad-date-cast usage:
+      <warn-bad-date-cast>boolean</warn-bad-date-cast>
+      -->
+      <!-- compiler.warn-bad-es3-type-method: 不明なメソッドです。-->
+      <!-- compiler.warn-bad-es3-type-method usage:
+      <warn-bad-es3-type-method>boolean</warn-bad-es3-type-method>
+      -->
+      <!-- compiler.warn-bad-es3-type-prop: 不明なプロパティです。-->
+      <!-- compiler.warn-bad-es3-type-prop usage:
+      <warn-bad-es3-type-prop>boolean</warn-bad-es3-type-prop>
+      -->
+      <!-- compiler.warn-bad-nan-comparison: NaN の比較が無効です。NaN を含む比較処理は、NaN != NaN となるため false になります。-->
+      <!-- compiler.warn-bad-nan-comparison usage:
+      <warn-bad-nan-comparison>boolean</warn-bad-nan-comparison>
+      -->
+      <!-- compiler.warn-bad-null-assignment: null に代入できません。-->
+      <!-- compiler.warn-bad-null-assignment usage:
+      <warn-bad-null-assignment>boolean</warn-bad-null-assignment>
+      -->
+      <!-- compiler.warn-bad-null-comparison: null の比較が無効です。-->
+      <!-- compiler.warn-bad-null-comparison usage:
+      <warn-bad-null-comparison>boolean</warn-bad-null-comparison>
+      -->
+      <!-- compiler.warn-bad-undefined-comparison: undefined の比較が非論理的です。型が指定されていない変数 (または * 型の変数) のみ undefined にすることができます。-->
+      <!-- compiler.warn-bad-undefined-comparison usage:
+      <warn-bad-undefined-comparison>boolean</warn-bad-undefined-comparison>
+      -->
+      <!-- compiler.warn-boolean-constructor-with-no-args: Boolean() を引数なしで呼び出すと、ActionScript 3.0 では false が返されます。ActionScript 2.0 では Boolean() に undefined が返されていました。-->
+      <!-- compiler.warn-boolean-constructor-with-no-args usage:
+      <warn-boolean-constructor-with-no-args>boolean</warn-boolean-constructor-with-no-args>
+      -->
+      <!-- compiler.warn-changes-in-resolve: __resolve はサポートされなくなりました。-->
+      <!-- compiler.warn-changes-in-resolve usage:
+      <warn-changes-in-resolve>boolean</warn-changes-in-resolve>
+      -->
+      <!-- compiler.warn-class-is-sealed: クラスは sealed です。このクラスにメンバーを動的に追加することはできません。-->
+      <!-- compiler.warn-class-is-sealed usage:
+      <warn-class-is-sealed>boolean</warn-class-is-sealed>
+      -->
+      <!-- compiler.warn-const-not-initialized: 定数が初期化されていません。-->
+      <!-- compiler.warn-const-not-initialized usage:
+      <warn-const-not-initialized>boolean</warn-const-not-initialized>
+      -->
+      <!-- compiler.warn-constructor-returns-value: new 式で使用されている関数は値を返します。結果は、関数の新しいインスタンスではなく、その関数の戻り値になります。-->
+      <!-- compiler.warn-constructor-returns-value usage:
+      <warn-constructor-returns-value>boolean</warn-constructor-returns-value>
+      -->
+      <!-- compiler.warn-deprecated-event-handler-error: EventHandler がリスナーとして追加されていません。-->
+      <!-- compiler.warn-deprecated-event-handler-error usage:
+      <warn-deprecated-event-handler-error>boolean</warn-deprecated-event-handler-error>
+      -->
+      <!-- compiler.warn-deprecated-function-error: サポートされていない ActionScript 2.0 の関数です。-->
+      <!-- compiler.warn-deprecated-function-error usage:
+      <warn-deprecated-function-error>boolean</warn-deprecated-function-error>
+      -->
+      <!-- compiler.warn-deprecated-property-error: サポートされていない ActionScript 2.0 のプロパティです。-->
+      <!-- compiler.warn-deprecated-property-error usage:
+      <warn-deprecated-property-error>boolean</warn-deprecated-property-error>
+      -->
+      <!-- compiler.warn-duplicate-argument-names: 同じ名前の引数が複数あります。-->
+      <!-- compiler.warn-duplicate-argument-names usage:
+      <warn-duplicate-argument-names>boolean</warn-duplicate-argument-names>
+      -->
+      <!-- compiler.warn-duplicate-variable-def: 変数の定義が重複しています -->
+      <!-- compiler.warn-duplicate-variable-def usage:
+      <warn-duplicate-variable-def>boolean</warn-duplicate-variable-def>
+      -->
+      <!-- compiler.warn-for-var-in-changes: ActionScript 3.0 では、オブジェクトのプロパティを "for x in target" ステートメント内でランダムな順番で繰り返し処理します。-->
+      <!-- compiler.warn-for-var-in-changes usage:
+      <warn-for-var-in-changes>boolean</warn-for-var-in-changes>
+      -->
+      <!-- compiler.warn-import-hides-class: 現在のクラスと同じ名前でパッケージをインポートすると、このスコープ内のクラス識別子が非表示になります。-->
+      <!-- compiler.warn-import-hides-class usage:
+      <warn-import-hides-class>boolean</warn-import-hides-class>
+      -->
+      <!-- compiler.warn-instance-of-changes: instanceof 演算子を使用します。-->
+      <!-- compiler.warn-instance-of-changes usage:
+      <warn-instance-of-changes>boolean</warn-instance-of-changes>
+      -->
+      <!-- compiler.warn-internal-error: コンパイラーの内部エラーです。-->
+      <!-- compiler.warn-internal-error usage:
+      <warn-internal-error>boolean</warn-internal-error>
+      -->
+      <!-- compiler.warn-level-not-supported: _level はサポートされなくなりました。詳細については、flash.display パッケージを参照してください。-->
+      <!-- compiler.warn-level-not-supported usage:
+      <warn-level-not-supported>boolean</warn-level-not-supported>
+      -->
+      <!-- compiler.warn-missing-namespace-decl: 名前空間の宣言がありません (変数が public や private などに定義されていません)。-->
+      <!-- compiler.warn-missing-namespace-decl usage:
+      <warn-missing-namespace-decl>boolean</warn-missing-namespace-decl>
+      -->
+      <!-- compiler.warn-negative-uint-literal: 負の値を uint データ型に割り当てると、大きい正の値になります。-->
+      <!-- compiler.warn-negative-uint-literal usage:
+      <warn-negative-uint-literal>boolean</warn-negative-uint-literal>
+      -->
+      <!-- compiler.warn-no-constructor: コンストラクターが見つかりません。-->
+      <!-- compiler.warn-no-constructor usage:
+      <warn-no-constructor>boolean</warn-no-constructor>
+      -->
+      <!-- compiler.warn-no-explicit-super-call-in-constructor: super() ステートメントがコンストラクター内で呼び出されませんでした。-->
+      <!-- compiler.warn-no-explicit-super-call-in-constructor usage:
+      <warn-no-explicit-super-call-in-constructor>boolean</warn-no-explicit-super-call-in-constructor>
+      -->
+      <!-- compiler.warn-no-type-decl: 型宣言がありません。-->
+      <!-- compiler.warn-no-type-decl usage:
+      <warn-no-type-decl>boolean</warn-no-type-decl>
+      -->
+      <!-- compiler.warn-number-from-string-changes: ActionScript 3.0 では、空白文字は無視され、'' は 0 を返します。ActionScript 2.0 では、パラメーターが '' であるか空白文字を含む場合に、Number() は NaN を返します。-->
+      <!-- compiler.warn-number-from-string-changes usage:
+      <warn-number-from-string-changes>boolean</warn-number-from-string-changes>
+      -->
+      <!-- compiler.warn-scoping-change-in-this: this キーワードのスコープが変更されました。クラスのインスタンスから抽出したクラスメソッドでは、this で常にそのインスタンスを参照します。ActionScript 2.0 では、メソッドを呼び出した場所に基づいて this を動的に参照します。-->
+      <!-- compiler.warn-scoping-change-in-this usage:
+      <warn-scoping-change-in-this>boolean</warn-scoping-change-in-this>
+      -->
+      <!-- compiler.warn-slow-text-field-addition: TextField で += を使用するのは効果的ではありません。-->
+      <!-- compiler.warn-slow-text-field-addition usage:
+      <warn-slow-text-field-addition>boolean</warn-slow-text-field-addition>
+      -->
+      <!-- compiler.warn-unlikely-function-value: 括弧がない可能性があります。-->
+      <!-- compiler.warn-unlikely-function-value usage:
+      <warn-unlikely-function-value>boolean</warn-unlikely-function-value>
+      -->
+      <!-- compiler.warn-xml-class-has-changed: ActionScript 2.0 XML クラスを使用している可能性があります。-->
+      <!-- compiler.warn-xml-class-has-changed usage:
+      <warn-xml-class-has-changed>boolean</warn-xml-class-has-changed>
+      -->
+   </compiler>
+   <!-- compute-digest: ライブラリの catalog.xml にダイジェストを書き込みます。ライブラリがドメイン間の rsl として使用されるときには、これを使用します。-->
+   <!-- compute-digest usage:
+   <compute-digest>boolean</compute-digest>
+   -->
+   <!-- debug-password: デバッグ可能な SWF に含めるパスワード-->
+   <debug-password></debug-password>
+   <!-- default-background-color: デフォルトの背景色 (アプリケーションコードによってオーバーライドされる場合があります)-->
+   <default-background-color>0xFFFFFF</default-background-color>
+   <!-- default-frame-rate: SWF で使用する既定のフレームレート。-->
+   <default-frame-rate>24</default-frame-rate>
+   <!-- default-script-limits: デフォルトのスクリプト実行の制限 (ルート属性によってオーバーライドされます)-->
+   <default-script-limits>
+      <max-recursion-depth>1000</max-recursion-depth>
+      <max-execution-time>60</max-execution-time>
+   </default-script-limits>
+   <!-- default-size: デフォルトのアプリケーションサイズ (アプリケーションのルート属性によってオーバーライドされます)-->
+   <default-size>
+      <width>500</width>
+      <height>375</height>
+   </default-size>
+   <!-- directory: SWC ファイルではなくオープンディレクトリとしてライブラリを出力します-->
+   <directory>false</directory>
+   <!-- externs: SWF の構築時にリンク対象から除外するシンボルの一覧-->
+   <!-- externs usage:
+   <externs>
+      <symbol>string</symbol>
+      <symbol>string</symbol>
+   </externs>
+   -->
+   <frames>
+      <!-- frames.frame: フレームにリンクされる一連のクラス名を含む SWF フレームラベル。-->
+      <!-- frames.frame usage:
+      <frame>
+         <label>string</label>
+         <classname>string</classname>
+      </frame>
+      -->
+   </frames>
+   <framework>halo</framework>
+   <!-- include-classes: 出力 SWC に含めるクラスの一覧-->
+   <!-- include-classes usage:
+   <include-classes>
+      <class>string</class>
+      <class>string</class>
+   </include-classes>
+   -->
+   <!-- include-file: 出力 SWC に含める名前付きファイルの一覧-->
+   <!-- include-file usage:
+   <include-file>
+      <name>string</name>
+      <path>string</path>
+      <path>string</path>
+   </include-file>
+   -->
+   <!-- include-lookup-only: true の場合、lookupOnly=true のマニフェストエントリが SWC カタログに含まれます。デフォルトは false です。-->
+   <!-- include-lookup-only usage:
+   <include-lookup-only>boolean</include-lookup-only>
+   -->
+   <!-- include-namespaces: リストされている名前空間内のすべてのクラスが出力 SWC に含まれます-->
+   <!-- include-namespaces usage:
+   <include-namespaces>
+      <uri>string</uri>
+      <uri>string</uri>
+   </include-namespaces>
+   -->
+   <!-- include-resource-bundles: 出力 SWC に含めるリソースバンドルの一覧-->
+   <!-- include-resource-bundles usage:
+   <include-resource-bundles>
+      <bundle>string</bundle>
+      <bundle>string</bundle>
+   </include-resource-bundles>
+   -->
+   <!-- include-sources: 出力 SWC に含めるディレクトリとソースファイルの一覧-->
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\IWatchField.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\bind.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\bindFields.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\impl\BINDER.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\impl\FieldBindList.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\impl\FieldBindListNode.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\impl\FieldBinder.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\impl\PropertyRoot.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\impl\WatchField.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\map\CLASS_MAPPINGS.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\map\MappingStorage.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\map\bindAll.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\map\bindAllMapped.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\map\pollute.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\map\unbindAll.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\unbind.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\unbindField.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\bind\watch.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\CONNECTIONS.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\connect.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\disconnect.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\disconnectEntirely.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\impl\AbstractDelayConnector.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\impl\AbstractDynamicConnector.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\impl\ConnectionRegistry.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\impl\Connector.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\impl\DelayConnector.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\impl\IConnector.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\impl\MapInformation.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\impl\MapInformationStorage.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\impl\WeakConnector.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\connect\impl\WeakDelayConnector.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\Field.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\IBoolField.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\IField.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\IFieldObserver.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\INumberField.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\NumberField.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\bool\AndField.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\bool\BoolField.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\bool\BoolFieldWrapper.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\bool\FALSE.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\bool\NotWrapper.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\bool\OrField.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\bool\TRUE.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\bool\and.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\bool\not.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\bool\or.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\Expression.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\ExpressionParseError.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\ExpressionParser.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\NumberFieldWrapper.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\PARSER.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\expr.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\operator\ADD.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\operator\AddOperator.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\operator\DIVIDE.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\operator\DivideOperator.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\operator\IOperator.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\operator\MULTIPLY.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\operator\MultiplyOperator.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\operator\SUBSTRACT.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\operator\SubstractOperator.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\value\Base.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\value\Field.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\value\FontSize.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\value\IValue.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\value\Operation.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\value\Percent.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\value\ResolutionDependent.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\value\StaticNumber.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\expr\value\XSize.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\impl\OBSERVER_LIST_POOL.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\impl\ObserverList.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\impl\ObserverListNode.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\system\FONT_INFO.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\system\FontInfoProvider.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\field\system\StageProperties.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\observe\IPropertyObservable.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\observe\IPropertyObserver.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\observe\Observable.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\observe\ObservableSprite.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\observe\PropertyBroadcaster.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\observe\PropertyBroadcasterNode.as</path-element>
+   </include-sources>
+   <include-sources>
+      <path-element>C:\Users\mh\workspace\nanosome-notify\temp\src\nanosome\notify\version.as</path-element>
+   </include-sources>
+   <!-- include-stylesheet: 出力 SWC に含める名前付きスタイルシートリソースの一覧-->
+   <!-- include-stylesheet usage:
+   <include-stylesheet>
+      <name>string</name>
+      <path>string</path>
+      <path>string</path>
+   </include-stylesheet>
+   -->
+   <!-- includes: SWF ファイル作成時に常にリンクされるシンボルの一覧です-->
+   <!-- includes usage:
+   <includes>
+      <symbol>string</symbol>
+      <symbol>string</symbol>
+   </includes>
+   -->
+   <!-- link-report: アプリケーションにリンクされるすべての定義に関する XML 形式のレポートを出力します。-->
+   <!-- link-report usage:
+   <link-report>filename</link-report>
+   -->
+   <!-- load-config: 設定オプションを含むファイルをロードします-->
+   <load-config>compiler.conf.xml</load-config>
+   <!-- load-externs: SWF の構築時にリンク対象から除外する <def>、<pre>、および <ext> シンボルを含む XML ファイル-->
+   <!-- load-externs usage:
+   <load-externs>filename</load-externs>
+   -->
+   <metadata>
+      <!-- metadata.contributor: SWF メタデータに保存されている投稿者の名前-->
+      <!-- metadata.contributor usage:
+      <contributor>name</contributor>
+      -->
+      <!-- metadata.creator: SWF メタデータに保存されている作成者の名前-->
+      <creator>Nanosome</creator>
+      <!-- metadata.date: SWF メタデータに保存されている作成日-->
+      <!-- metadata.date usage:
+      <date>text</date>
+      -->
+      <!-- metadata.description: SWF メタデータに保存されているデフォルトの説明-->
+      <!-- metadata.description usage:
+      <description>text</description>
+      -->
+      <!-- metadata.language: SWF メタデータに保存されている言語 (EN、FR など)-->
+      <!-- metadata.language usage:
+      <language>code</language>
+      -->
+      <!-- metadata.localized-description: SWF メタデータに保存されているローカライズされた RDF/XMP の説明-->
+      <!-- metadata.localized-description usage:
+      <localized-description>
+         <text>string</text>
+         <lang>string</lang>
+         <lang>string</lang>
+      </localized-description>
+      -->
+      <!-- metadata.localized-title: SWF メタデータに保存されているローカライズされた RDF/XMP タイトル-->
+      <!-- metadata.localized-title usage:
+      <localized-title>
+         <title>string</title>
+         <lang>string</lang>
+         <lang>string</lang>
+      </localized-title>
+      -->
+      <!-- metadata.publisher: SWF メタデータに保存されている発行者の名前-->
+      <!-- metadata.publisher usage:
+      <publisher>name</publisher>
+      -->
+      <!-- metadata.title: SWF メタデータに保存されているデフォルトのタイトル-->
+      <title>Nanosome Notify</title>
+   </metadata>
+   <!-- output: 作成する SWF ムービーのファイル名-->
+   <output>C:\Users\mh\workspace\nanosome-notify\temp\nanosome-notify.20101113.1r99.swc</output>
+   <!-- raw-metadata: SWF メタデータに保存されている XML テキスト (metadata.* の設定をオーバーライドします)-->
+   <!-- raw-metadata usage:
+   <raw-metadata>text</raw-metadata>
+   -->
+   <!-- resource-bundle-list: リソースバンドルの SWC ファイルを生成するために compc コンパイラーに入力するリソースバンドルのリストをファイルに出力します。 -->
+   <!-- resource-bundle-list usage:
+   <resource-bundle-list>filename</resource-bundle-list>
+   -->
+   <!-- runtime-shared-libraries: アプリケーションが起動する前にロードされるランタイム共有ライブラリの URL の一覧-->
+   <!-- runtime-shared-libraries usage:
+   <runtime-shared-libraries>
+      <url>string</url>
+      <url>string</url>
+   </runtime-shared-libraries>
+   -->
+   <!-- runtime-shared-library-path usage:
+   <runtime-shared-library-path>
+      <path-element>string</path-element>
+      <rsl-url>string</rsl-url>
+      <policy-file-url>string</policy-file-url>
+   </runtime-shared-library-path>
+   -->
+   <!-- static-link-runtime-shared-libraries: ドメイン間の rsl によって指定されたライブラリを静的にリンクします。-->
+   <!-- static-link-runtime-shared-libraries usage:
+   <static-link-runtime-shared-libraries>boolean</static-link-runtime-shared-libraries>
+   -->
+   <!-- target-player: アプリケーションがターゲットとするプレーヤーのバージョンを指定します。より新しいバージョンを必要とする機能は、アプリケーションにコンパイルされません。サポートされる最小の値は「9.0.0」です。-->
+   <target-player>10.0.0</target-player>
+   <!-- tools-locale: エラーと警告を通知する際にコンパイラーで使用するロケールを指定します。-->
+   <!-- tools-locale usage:
+   <tools-locale>string</tools-locale>
+   -->
+   <!-- use-network: ネットワークリソースへのアクセスについて SWF にフラグを設定するかどうかを切り替えます-->
+   <use-network>true</use-network>
+   <!-- verify-digests: 実行時にロードされたライブラリが正しいことを確認します。-->
+   <!-- verify-digests usage:
+   <verify-digests>boolean</verify-digests>
+   -->
+   <!-- version: プログラムのビルドバージョンを表示します-->
+   <!-- version usage:
+   <version>boolean</version>
+   -->
+   <!-- warnings: 警告の表示を切り替えます-->
+   <!-- warnings usage:
+   <warnings>boolean</warnings>
+   -->
+</flex-config>

@@ -44,6 +44,10 @@ package nanosome.notify.connect.impl {
 		private var _updateImmediatly: Boolean;
 		private var _fieldReferences: WeakDictionary;
 		
+		public function AbstractDynamicConnector() {
+			super();
+		}
+		
 		public function init( objectA: Object, objectB: Object, mapping: MapInformation ): IConnector {
 			
 			_mapping = mapping;

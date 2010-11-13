@@ -12,6 +12,10 @@ package nanosome.notify.field.impl {
 		public var strongObserver: IFieldObserver;
 		public var nextObserver: ObserverListNode;
 		
+		public function ObserverListNode() {
+			super();
+		}
+		
 		override public function set strong( content: * ): void {
 			strongObserver = IFieldObserver( content );
 		}

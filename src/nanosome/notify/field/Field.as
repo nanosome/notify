@@ -15,10 +15,10 @@ package nanosome.notify.field {
 		
 		protected var _value: *;
 		
-		private var _observers : ObserverList;
+		private var _observers: ObserverList;
 		
 		public function Field( value: * = null ) {
-			if( value ) {
+			if( value !== null && value !== undefined ) {
 				setValue( value );
 			}
 		}
@@ -65,6 +65,7 @@ package nanosome.notify.field {
 			}
 		}
 		
+		
 		public function hasObserver( observer: IFieldObserver ): Boolean {
 			return _observers && _observers.contains( observer );
 		}
@@ -78,7 +79,9 @@ package nanosome.notify.field {
 		}
 		
 		protected final function notifyStateChange(): void {
-			notifyValueChange( null, null );
+			if( _observers ) {
+				_observers.notifyPropertyChange( this, null, null );
+			}
 		}
 		
 		protected function notifyValueChange( oldValue: *, newValue: * ): void {
@@ -96,7 +99,7 @@ package nanosome.notify.field {
 		
 		public function dispose() : void {
 			clearObservers();
-			_value = null;
+			value = null;
 		}
 		
 		public function toString() : String {

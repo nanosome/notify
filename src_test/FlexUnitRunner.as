@@ -1,4 +1,5 @@
 package {
+	import nanosome.notify.field.expr.ExpressionTest;
 	import nanosome.notify.connect.DynamicConnectionTest;
 	import nanosome.notify.bind.BinderTest;
 	import nanosome.notify.bind.WatchTest;
@@ -25,11 +26,12 @@ package {
 			core.addListener(new TraceListener());
 			
 			core.run( [
-				BinderTest,
-				WatchTest,
-				FieldTest,
-				PropertyBroadcasterTest,
-				DynamicConnectionTest
+				//BinderTest,
+				//WatchTest,
+				//FieldTest,
+				//PropertyBroadcasterTest,
+				//DynamicConnectionTest,
+				ExpressionTest
 			] );
 		}
 	}

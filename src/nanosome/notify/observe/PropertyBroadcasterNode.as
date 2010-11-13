@@ -18,6 +18,10 @@ package nanosome.notify.observe {
 	 */
 	internal final class PropertyBroadcasterNode extends ListNode {
 		
+		public function PropertyBroadcasterNode() {
+			super();
+		}
+		
 		/**
 		 * Observer matching to this node.
 		 */

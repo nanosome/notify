@@ -8,6 +8,10 @@ package nanosome.notify.connect.impl {
 		
 		private const _weakDictionary: WeakDictionary = new WeakDictionary();
 		
+		public function WeakConnector() {
+			super();
+		}
+		
 		override public function init( objectA: Object, objectB: Object, map: MapInformation ): IConnector {
 			super.init( objectA, objectB, map );
 			_weakDictionary[ objectA ] = true;

@@ -13,6 +13,10 @@ package nanosome.notify.connect.impl {
 		protected var _changesA: Object;
 		protected var _changesB: Object;
 		
+		public function AbstractDelayConnector() {
+			super();
+		}
+		
 		override public function onPropertyChange( observable: *, propertyName : String, oldValue : *, newValue : *) : void {
 			oldValue;
 			

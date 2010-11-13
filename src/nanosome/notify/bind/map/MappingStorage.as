@@ -13,6 +13,10 @@ package nanosome.notify.bind.map {
 		
 		private const _maps: Object = new Object();
 		
+		public function MappingStorage() {
+			super();
+		}
+		
 		public function getMapping( source: Accessor, target: Accessor ): Object {
 			if( target == null || source == null ) {
 				return null;

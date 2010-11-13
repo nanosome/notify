@@ -16,6 +16,10 @@ package nanosome.notify.bind.impl {
 		public var field: IField;
 		public var nextNode: FieldBindListNode;
 		
+		public function FieldBindListNode() {
+			super();
+		}
+		
 		override public function set strong( content: IUID ): void {
 			field = IField( content );
 		}

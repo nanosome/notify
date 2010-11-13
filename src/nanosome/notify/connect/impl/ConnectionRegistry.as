@@ -12,6 +12,10 @@ package nanosome.notify.connect.impl {
 		private const _connections: WeakDictionary = new WeakDictionary();
 		private const _mapStorage: MapInformationStorage = new MapInformationStorage();
 		
+		public function ConnectionRegistry() {
+			super();
+		}
+		
 		public function connect( source: *, target: *, weak: Boolean = false,
 									onEnterFrame: Boolean = true ): Boolean {
 			// only connect objects!
