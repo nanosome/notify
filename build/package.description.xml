@@ -1,0 +1,20 @@
+<overviews>
+	<packages>
+		<package name="" >
+			<shortDescription><![CDATA[
+				Hello World1
+			]]></shortDescription>
+			<description><![CDATA[
+				Long, Long, Long, Loooong! Description1
+			]]></description>
+		</package>
+		<package name="nanosome.notify" >
+			<shortDescription><![CDATA[
+				Hello World
+			]]></shortDescription>
+			<description><![CDATA[
+				Long, Long, Long, Loooong! Description
+			]]></description>
+		</package>
+	</packages>
+</overviews>

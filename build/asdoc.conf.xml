@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<flex-config xmlns="http://www.adobe.com/2006/flex-config">
+	<compiler>
+		<library-path append="true">
+			<path-element>../lib/nanosome-util/nanosome-util.swc</path-element>
+		</library-path>
+	</compiler>
+	<package-description-file>../package.description.xml</package-description-file>
+</flex-config>
