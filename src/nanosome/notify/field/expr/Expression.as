@@ -1,11 +1,12 @@
 package nanosome.notify.field.expr {
+	import nanosome.notify.field.system.X_SIZE;
+	import nanosome.notify.field.system.FONT_SIZE;
 	import nanosome.notify.field.NumberField;
 	import nanosome.notify.field.Field;
 	import nanosome.notify.field.IField;
 	import nanosome.notify.field.IFieldObserver;
 	import nanosome.notify.field.INumberField;
 	import nanosome.notify.field.expr.value.IValue;
-	import nanosome.notify.field.system.FONT_INFO;
 
 	import flash.system.Capabilities;
 	import flash.utils.Dictionary;
@@ -37,10 +38,12 @@ package nanosome.notify.field.expr {
 			
 			_expr = PARSER.parse( newValue );
 			
-			if( _expr && _expr.requiresFontSize ) {
-				FONT_INFO.addObserver( this );
+			if ( _expr && _expr.requiresFontSize ) {
+				FONT_SIZE.addObserver( this );
+				X_SIZE.addObserver( this );
 			} else {
-				FONT_INFO.removeObserver( this );
+				FONT_SIZE.removeObserver( this );
+				X_SIZE.removeObserver( this );
 			}
 			
 			if( _expr ) {
@@ -190,7 +193,7 @@ package nanosome.notify.field.expr {
 				if( _base ) {
 					base = _base.asNumber;
 				}
-				var newValue: Number = _expr.getValue( base, _dpi, FONT_INFO.fontSize, FONT_INFO.xSize, _fields || EMPTY );
+				var newValue: Number = _expr.getValue( base, _dpi, FONT_SIZE.asNumber, X_SIZE.asNumber, _fields || EMPTY );
 				if( newValue != _number ) {
 					_number = newValue;
 					if( _number == Infinity ) {

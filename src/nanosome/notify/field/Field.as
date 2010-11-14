@@ -80,7 +80,7 @@ package nanosome.notify.field {
 		
 		protected final function notifyStateChange(): void {
 			if( _observers ) {
-				_observers.notifyPropertyChange( this, null, null );
+				_observers.notifyPropertyChange( this, _value, _value );
 			}
 		}
 		
