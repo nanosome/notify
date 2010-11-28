@@ -10,7 +10,6 @@ package nanosome.notify.observe {
 	import nanosome.util.list.ListNode;
 	import nanosome.util.pool.IInstancePool;
 	import nanosome.util.pool.poolFor;
-	import nanosome.util.pool.pools;
 
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
@@ -69,7 +68,7 @@ package nanosome.notify.observe {
 		 * @param target Target to be used on initialization of the instance
 		 */
 		public function PropertyBroadcaster( target: * = null ) {
-			super( pools.getOrCreate( PropertyBroadcasterNode ) );
+			super( poolFor( PropertyBroadcasterNode ) );
 			this.target = target;
 		}
 		

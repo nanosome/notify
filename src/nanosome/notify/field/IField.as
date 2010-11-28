@@ -1,8 +1,7 @@
 // @license@
-
 package nanosome.notify.field {
-	import nanosome.util.IUID;
 	
+	import nanosome.util.IUID;
 	
 	/**
 	 * <code>IField</code> is a basic concept in nanosome to reduce complexity of code.

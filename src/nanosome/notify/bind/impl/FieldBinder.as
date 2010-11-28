@@ -1,26 +1,61 @@
 // @license@
-
 package nanosome.notify.bind.impl {
+	
 	import nanosome.notify.field.IField;
 	import nanosome.notify.field.IFieldObserver;
 	import nanosome.util.pool.IInstancePool;
 	import nanosome.util.pool.poolFor;
-
+	
 	import flash.utils.Dictionary;
 	
-	
 	/**
+	 * <code>FieldBinder</code> is the default mechanism for binding.
+	 * 
+	 * <p><code>FieldBinder</code> binds, as the name suggests, <code>IField</code>
+	 * instances to each-other. Binding means that whenever the content of one
+	 * field changes, all bound fields change as well.</p>
+	 * 
+	 * <p>The <code>FieldBinder</code> supports weak binding as well as masters in
+	 * binding nodes. A &quot;master&quot; is a field that is not changeable. The
+	 * <code>FieldBinder</code> will respect that and any connect field that changes
+	 * will be immediately set back to the value of the master.</p>
+	 * 
+	 * <p>For fields that are changeable but should still be treated as master
+	 * nodes its possible to state that while binding.</p>
+	 * 
+	 * <p class="warning">Warning: In case two masters/unchangeable fields are bound
+	 * together, a runtime exception will be raised!</p>
+	 * 
 	 * @author Martin Heidegger mh@leichtgewicht.at
+	 * @see nanosome.notify.field.IField
+	 * @see nanosome.notify.field.IField#isChangable
 	 */
 	public class FieldBinder implements IFieldObserver {
 		
-		private const _relationMap: Dictionary = new Dictionary();
-		private const _listPool: IInstancePool = poolFor( FieldBindList );
+		// Stores which fields are bound together.
+		protected const _relationMap: Dictionary /* IField -> FieldBindList */ = new Dictionary();
 		
+		// Pool of lists to be used.
+		protected const _listPool: IInstancePool = poolFor( FieldBindList );
+		
+		/**
+		 * Constructs a new <code>FieldBinder</code>.
+		 */
 		public function FieldBinder() {
 			super();
 		}
 		
+		/**
+		 * Binds two fields together.
+		 * 
+		 * <p>If one or both of the fields have been bound before, all fields will
+		 * be bound together.</p>
+		 * 
+		 * @param fieldA First <code>IField</code> to bind
+		 * @param fieldB Second <code>IField</code> to bind
+		 * @param bidirectional If set to false it will use the <code>fieldA</code> as master
+		 * @return <code>fieldA</code> that was passed-in
+		 */
 		public function bind( fieldA: IField, fieldB: IField, bidirectional: Boolean = true ): IField {
 			if( fieldA != null && fieldB != null ) {
 				var relationsA: FieldBindList = _relationMap[ fieldA ];
@@ -45,6 +80,8 @@ package nanosome.notify.bind.impl {
 													+ " it was already bound to a unchangable field '"
 													+ (relationsA.unchangable || relationsB.unchangable) + "'; cross-lock" );
 							}
+							
+							// Use fieldA as master field
 							if( !bidirectional ) {
 								relationsA.master = fieldA;
 							}
@@ -97,7 +134,7 @@ package nanosome.notify.bind.impl {
 						}
 						relationsA.add( fieldB );
 						fieldA.addObserver( this );
-						fieldB.addObserver(this);
+						fieldB.addObserver( this );
 						_relationMap[ fieldA ] = relationsA;
 						_relationMap[ fieldB ] = relationsA;
 					} catch( e: Error ) {
@@ -111,6 +148,21 @@ package nanosome.notify.bind.impl {
 			return fieldA;
 		}
 		
+		/**
+		 * Releases a <code>IField</code> from all bindings.
+		 * 
+		 * <p>In case the field was bound before it will not take over any changes
+		 * anymore.</p>
+		 * 
+		 * <p>In case it wasn`t bound before, nothing will happen, it will just
+		 * be returned.</p>
+		 * 
+		 * <p>If it was bound to exactly one other field, also the other field
+		 * will be released from binding.</p>
+		 * 
+		 * @param field <code>IField</code> to be unbound
+		 * @return the passed-in <code>IField</code>
+		 */
 		public function unbind( field: IField ): IField {
 			var relations: FieldBindList = _relationMap[ field ];
 			
@@ -121,7 +173,7 @@ package nanosome.notify.bind.impl {
 				// Just check if the list of relations should be checked for its
 				// size if something was removed from the list
 				if( relations.size == 1 ) {
-					// Remove the last MO as well since it is not bound anymore
+					// Remove the last field as well since it is not bound anymore
 					var lastField: IField = relations.firstNode.field;
 					_relationMap[ lastField ] = null;
 					relations.remove( lastField );
@@ -133,11 +185,20 @@ package nanosome.notify.bind.impl {
 				}
 			}
 			
-			// Unobserve this mo
+			// Unobserve this field
 			field.removeObserver( this );
 			return field;
 		}
 		
+		/**
+		 * Implementation of <code>IFieldObserver</code>. Passes the changes
+		 * of one field to all bound fields.
+		 * 
+		 * @param field <code>IField</code> that had some change
+		 * @param oldValue the former value of the field
+		 * @param newValue the new value of the field
+		 * @see IFieldObserver#onFieldChange
+		 */
 		public function onFieldChange( field: IField, oldValue: * = null, newValue: * = null ): void {
 			// Use of a central approach to listening because it will not require to add/remove
 			// listeners of merged relation lists
