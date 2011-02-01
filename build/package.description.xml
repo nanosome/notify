@@ -1,19 +1,47 @@
 <overviews>
 	<packages>
-		<package name="" >
-			<shortDescription><![CDATA[
-				Hello World1
-			]]></shortDescription>
-			<description><![CDATA[
-				Long, Long, Long, Loooong! Description1
-			]]></description>
-		</package>
 		<package name="nanosome.notify" >
 			<shortDescription><![CDATA[
-				Hello World
+				Contains all classes related to notification based systems like
+				Observers, Events, etc.
 			]]></shortDescription>
 			<description><![CDATA[
-				Long, Long, Long, Loooong! Description
+				Nanosome notify offers various approaches for different cases
+				of event handling and change broacasting.
+			]]></description>
+		</package>
+		<package name="nanosome.notify.bind" >
+			<shortDescription><![CDATA[
+				A advanced binding mechanism which allows to bind regular AS3 classes
+				on property level to each ot.
+			]]></shortDescription>
+			<description><![CDATA[
+				&lt;p&gt;The Adobe Flex approach of binding in MXML has some serious flaws.
+				Most important is that its not available in Flash Professional,
+				but also the performance and the code-only-usability leaves space
+				for improvement.&lt;/p&gt;
+				
+				&lt;p&gt;Binding as opposed to Connecting describs a 
+				&lt;strong&gt;property&lt;/strong&gt; based approach to update changes.
+				In case one property changes the other one changes accordingly.
+				&lt;/p&gt;
+				
+				&lt;p&gt;The nanosome binding mechanism tries to accomplish follow
+				targets:&lt;/p&gt;
+				&lt;ul&gt;
+					&lt;li&gt;Make sure its as fast as possible. (preferrably faster than
+					flex binding).&lt;/li&gt;
+					&lt;li&gt;Allow binding of non-flex code to flex code.&lt;/li&gt;
+					&lt;li&gt;Make it easy to use without mxml.&lt;/li&gt;
+					&lt;li&gt;Allow master-client sychronization.&lt;/li&gt;
+				&lt;/ul&gt;
+				
+				&lt;p&gt;Essentially all binding here binds <code>IField</code>
+				instances like described in &lt;code&gt;nansome.notify.field.IField&lt;/code&gt;
+				together. In case you want to bind regular objects there is the
+				<code>watch</code> functionality that should be quite helpful. Please
+				refer to its documentation for more information about the internals.
+				&lt;/p&gt;
 			]]></description>
 		</package>
 	</packages>

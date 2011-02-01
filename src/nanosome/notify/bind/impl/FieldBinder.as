@@ -26,9 +26,17 @@ package nanosome.notify.bind.impl {
 	 * <p class="warning">Warning: In case two masters/unchangeable fields are bound
 	 * together, a runtime exception will be raised!</p>
 	 * 
+	 * <p>For the ease-of-use, <code>bind</code>, <code>bindFields</code>,
+	 * <code>bindAll</code>, etc. refer to the constant
+	 * <code>nanosome.bind.impl.BINDER</code>. Those methods are nothing more than
+	 * delegations. This makes it easy to use your own instance in case you rely
+	 * on a <abbr title="Inversion of Control">IOC</abbr>-container like Spring,
+	 * Spicelib, etc. but keeps it open for less advanced developers.</p>
+	 * 
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 * @see nanosome.notify.field.IField
 	 * @see nanosome.notify.field.IField#isChangable
+	 * @version 1.0
 	 */
 	public class FieldBinder implements IFieldObserver {
 		

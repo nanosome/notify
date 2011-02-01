@@ -1,4 +1,4 @@
-#Mon Oct 18 13:05:37 JST 2010
+#Mon Nov 29 13:14:03 JST 2010
 com.powerflasher.fdt.core.CompatiblePlayers=External_SWF_Viewer\:Browser\:Standalone_Flash_Player
 com.powerflasher.fdt.core.CompilerArguments=-target-player\={playerVersion}\n-library-path {flexSDK}/frameworks/locale/en_US\n-compiler.keep-as3-metadata Observable
 com.powerflasher.fdt.core.DefaultOutputFolder=bin
@@ -11,6 +11,6 @@ com.powerflasher.fdt.core.PassSwcs=true
 com.powerflasher.fdt.core.PlayerVersion=10.0
 com.powerflasher.fdt.core.ProjectTypeHint=AS 3
 com.powerflasher.fdt.core.Runtime=Flash_Player
-com.powerflasher.fdt.core.SdkName=Flex 4.1
+com.powerflasher.fdt.core.SdkName=Flex 4.0
 com.powerflasher.fdt.core.useProjectFormatterSettings=true
 eclipse.preferences.version=1

@@ -1,3 +1,4 @@
+// @license@
 package nanosome.notify.bind.map {
 	
 	import nanosome.util.access.Accessor;
@@ -5,6 +6,7 @@ package nanosome.notify.bind.map {
 	
 	/**
 	 * @author Martin Heidegger mh@leichtgewicht.at
+	 * @version 1.0
 	 */
 	public function bindAll( source: *, target: *, bidirectional: Boolean = true,
 								sourceAccessor: Accessor = null,

@@ -96,7 +96,8 @@ package nanosome.notify.field.expr {
 			var e1: Expression = expr( "{test}" );
 			assertEquals( NaN, e1.asNumber );
 			assertEquals( NaN, e1.field( "test", testField1 ).asNumber );
-			testField1.value = 12;
+			
+			e1.value = 12;
 			assertEquals( 12, e1.asNumber );
 		}
 		
