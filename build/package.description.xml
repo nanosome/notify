@@ -1,4 +1,14 @@
 <overviews>
+	<all-packages>
+		<description><![CDATA[
+			<div id="shortIntroduction">
+				<p>
+					The nanosome-notify project is a collection mechanisms to notify
+					and listen for changes in a system.
+				</p>
+			</div> 
+		]]></description>
+	</all-packages>
 	<packages>
 		<package name="nanosome.notify" >
 			<shortDescription><![CDATA[

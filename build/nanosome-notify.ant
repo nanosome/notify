@@ -9,7 +9,7 @@
 	
 	<import file="global/global.ant" />
 	
-	<target name="copy-dependencies-to-build-path">
-		<copy file="../lib/nanosome-util/nanosome-util.swc" tofile="${lib.path}nanosome-util.${DSTAMP}.${build.version}.swc"/>
+	<target name="copy-dependencies-to-build-path" depends="init">
+		<copy file="../lib/nanosome-util/nanosome-util.swc" todir="${build.lib.path}"/>
 	</target>
 </project>
