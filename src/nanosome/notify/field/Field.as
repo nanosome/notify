@@ -1,7 +1,26 @@
-// @license@
+//  
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License. 
+// 
 package nanosome.notify.field {
 	
 	
+	import nanosome.util.list.fnc.FUNCTION_LIST_POOL;
+	import nanosome.util.list.fnc.FunctionList;
 	import flash.utils.getQualifiedClassName;
 	import nanosome.util.IDisposable;
 	import nanosome.util.UID;
@@ -16,6 +35,7 @@ package nanosome.notify.field {
 		protected var _value: *;
 		
 		private var _observers: ObserverList;
+		private var _functions: FunctionList;
 		
 		public function Field( value: * = null ) {
 			if( value !== null && value !== undefined ) {
@@ -39,6 +59,10 @@ package nanosome.notify.field {
 				observer.onFieldChange( this, null, _value );
 			}
 			
+			if( !added ) {
+				clearObservers();
+			}
+			
 			return added;
 		}
 		
@@ -46,7 +70,10 @@ package nanosome.notify.field {
 			if( _observers ) {
 				clearObservers();
 			}
-			return _observers != null;
+			if( _functions ) {
+				clearFunctions();
+			}
+			return _observers != null || _functions != null;
 		}
 
 		public function removeObserver( observer: IFieldObserver ): Boolean {
@@ -65,6 +92,12 @@ package nanosome.notify.field {
 			}
 		}
 		
+		private function clearFunctions(): void {
+			if ( _functions.empty ) {
+				FUNCTION_LIST_POOL.returnInstance( _functions );
+				_functions = null;
+			}
+		}
 		
 		public function hasObserver( observer: IFieldObserver ): Boolean {
 			return _observers && _observers.contains( observer );
@@ -88,22 +121,62 @@ package nanosome.notify.field {
 			if( _observers ) {
 				_observers.notifyPropertyChange( this, oldValue, newValue );
 			}
+			if( _functions ) {
+				_functions.execute( this, oldValue, newValue );
+			}
 		}
 		
 		public function setValue( value: * ): Boolean {
-			if( _value != value ) {
+			if( _value != value || ( value is Number && isNaN(value) && isNaN(_value) ) ) {
 				notifyValueChange( _value, _value = value );
 			}
 			return true;
 		}
 		
 		public function dispose() : void {
-			clearObservers();
+			if( _functions ) {
+				FUNCTION_LIST_POOL.returnInstance( _functions );
+				_functions = null;
+			}
+			if( _observers ) {
+				OBSERVER_LIST_POOL.returnInstance(_observers);
+				_observers = null;
+			}
 			value = null;
 		}
 		
 		public function toString() : String {
 			return "[" + getQualifiedClassName( this ) + " value='" + value + "']";
+		}
+
+		public function listen(func : Function, executeImmediatly : Boolean = false, weakReference : Boolean=false) : Boolean {
+			if ( !_functions ) {
+				_functions = FUNCTION_LIST_POOL.getOrCreate();
+			}
+			
+			var added: Boolean = _functions.add( func );
+			if( executeImmediatly ) {
+				func( this, null, _value );
+			}
+			
+			if( !added ) {
+				clearFunctions();
+			}
+			
+			return added;
+		}
+
+		public function unlisten(func : Function) : Boolean {
+			if( _functions && _functions.remove( func ) ) {
+				clearFunctions();
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public function hasListening(func : Function) : Boolean {
+			return _functions && _functions.contains(func);
 		}
 	}
 }

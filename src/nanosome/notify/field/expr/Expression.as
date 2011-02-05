@@ -26,17 +26,12 @@ package nanosome.notify.field.expr {
 		private var _base: INumberField;
 		private var _fieldRegistry: Dictionary;
 		private var _fieldTargets: Object;
-		private var _changeable: Boolean;
 		private var _int: int;
 
-		public function Expression( expression: *, changeable: Boolean = false ) {
-			super( expression );
-			_changeable = changeable;
-		}
-		
-		override protected function notifyValueChange( oldValue: *, newValue: * ): void {
+		public function Expression( expression: * ) {
+			super();
 			
-			_expr = PARSER.parse( newValue );
+			_expr = PARSER.parse( expression );
 			
 			if ( _expr && _expr.requiresFontSize ) {
 				FONT_SIZE.addObserver( this );
@@ -54,7 +49,15 @@ package nanosome.notify.field.expr {
 				_int = NaN;
 			}
 			
-			super.notifyValueChange( oldValue, newValue );
+			checkAllFields();
+		}
+		
+		override public function setValue( value: * ): Boolean {
+			return false;
+		}
+		
+		override public function get value(): * {
+			return _number;
 		}
 		
 		override public function addObserver( observer: IFieldObserver, executeImmediately: Boolean = false,
@@ -63,15 +66,18 @@ package nanosome.notify.field.expr {
 			if( executeImmediately ) {
 				observer.onFieldChange( this, null, _number );
 			}
+			if( result ) {
+				checkAllFields();
+			}
 			return result;
 		}
 		
 		override public function removeObserver( observer: IFieldObserver ): Boolean {
-			if( !_expr.isStatic ) {
-				return super.removeObserver(observer);
-			} else {
-				return false;
+			var result: Boolean = super.removeObserver(observer);
+			if( result ) {
+				checkAllFields();
 			}
+			return result;
 		}
 		
 		public function get requiredFields(): Array {
@@ -106,13 +112,16 @@ package nanosome.notify.field.expr {
 			}
 		}
 		
-		private function checkObserving( value: INumberField ) : void {
-			if( value ) {
-				if( hasObservers && ( value == _base || _fieldRegistry[ value ] ) )
+		private function checkObserving( value: INumberField ): Boolean {
+			if( _expr && value ) {
+				if( hasObservers && ( value == _base || _fieldRegistry[ value ] ) ) {
 					value.addObserver( this );
-				else
+					return true;
+				} else {
 					value.removeObserver( this );
+				}
 			}
+			return false;
 		}
 		
 		public function field( fieldName: String, value: * ): Expression {
@@ -130,7 +139,10 @@ package nanosome.notify.field.expr {
 				if( array.indexOf( fieldName ) == -1 ) {
 					array.push( fieldName );
 				}
-				checkObserving( target );
+				if( checkObserving( target ) ) {
+					( _fields || ( _fields = {} ) )[ fieldName ] = target.asNumber;
+					updateValue();
+				}
 			}
 			return this;
 		}
@@ -162,11 +174,11 @@ package nanosome.notify.field.expr {
 					if( index != -1 ) {
 						if( list.length == 0 ) {
 							delete _fieldRegistry[ target ];
-							checkObserving( target );
 						} else {
 							list.splice( index, 1 );
 						}
 					}
+					checkAllFields();
 					updateValue();
 				}
 			}
@@ -195,16 +207,27 @@ package nanosome.notify.field.expr {
 				}
 				var newValue: Number = _expr.getValue( base, _dpi, FONT_SIZE.asNumber, X_SIZE.asNumber, _fields || EMPTY );
 				if( newValue != _number ) {
-					_number = newValue;
-					if( _number == Infinity ) {
+					if( newValue == Infinity ) {
 						_int = int.MAX_VALUE;
 					} else if( _number == -Infinity ) {
 						_int = int.MIN_VALUE;
 					} else {
 						_int = newValue;
 					}
-					notifyStateChange();
+					notifyValueChange( _number, _number = newValue );
 				}
+			}
+		}
+		
+		private function checkAllFields(): void {
+			var oneFound: Boolean = false;
+			for( var fieldName: String in _fieldTargets ) {
+				oneFound = checkObserving( _fieldTargets[ fieldName ] ) || oneFound;
+			}
+			if( oneFound ) {
+				_fields = {};
+			} else {
+				_fields = null;
 			}
 		}
 		
@@ -222,7 +245,7 @@ package nanosome.notify.field.expr {
 					// base might have no fields!
 					var i: int = fields.length;
 					while( --i -(-1) ) {
-						_fields[ fields[i] ] = newValue;
+						_fields[ fields[i] ] = isNaN( newValue ) ? 0 : newValue;
 					}
 				}
 			}
@@ -238,7 +261,7 @@ package nanosome.notify.field.expr {
 		}
 		
 		override public function get isChangeable(): Boolean {
-			return _changeable;
+			return false;
 		}
 	}
 }

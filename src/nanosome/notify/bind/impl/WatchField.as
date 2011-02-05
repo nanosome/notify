@@ -1,4 +1,21 @@
-// @license@
+//  
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License. 
+// 
 
 package nanosome.notify.bind.impl {
 	import nanosome.util.access.Accessor;
@@ -94,7 +111,7 @@ package nanosome.notify.bind.impl {
 		}
 		
 		private function set internalValue( newValue: * ): void {
-			if( _value != newValue ) {
+			if( _value != newValue || ( newValue is Number && isNaN(newValue) && isNaN(_value) ) ) {
 				if( _childPropertyWatcherMap ) {
 					for( var changeWatcher: * in _childPropertyWatcherMap )
 						WatchField( changeWatcher ).target = newValue;
@@ -133,7 +150,7 @@ package nanosome.notify.bind.impl {
 		}
 		
 		private function checkListeners(): void {
-			var needsListening: Boolean = ( !_broadcaster.empty || _childPropertyWatcherMap );
+			var needsListening: Boolean = ( !_broadcaster.empty || _childPropertyWatcherMap || hasObservers );
 			if( _isListening != needsListening ) {
 				if( needsListening ) {
 					PROTECT_FROM_GARBAGE_COLLECTION[ uid ] = this;
@@ -168,6 +185,30 @@ package nanosome.notify.bind.impl {
 			}
 			return false;
 		}
+	
+		override public function addObserver(observer : IFieldObserver, executeImmediately : Boolean = false, weakReference : Boolean = false) : Boolean {
+			var result: Boolean = super.addObserver(observer, executeImmediately, weakReference);
+			if( result ) checkListeners();
+			return result;
+		}
+	
+		override public function removeObserver(observer : IFieldObserver) : Boolean {
+			var result: Boolean = super.removeObserver(observer);
+			if( result ) checkListeners();
+			return result;
+		}
+	
+		override public function listen(func: Function, executeImmediately : Boolean = false, weakReference : Boolean = false) : Boolean {
+			var result: Boolean = super.listen(func, executeImmediately, weakReference);
+			if( result ) checkListeners();
+			return result;
+		}
+	
+		override public function unlisten(func: Function) : Boolean {
+			var result: Boolean = super.unlisten(func);
+			if( result ) checkListeners();
+			return result;
+		}
 		
 		public function removePropertyObserver( observer: IPropertyObserver ): Boolean {
 			if( _broadcaster.remove( observer ) ) {
@@ -181,7 +222,7 @@ package nanosome.notify.bind.impl {
 			_isListening = true;
 			if( _target is IField ) {
 				IField( _target ).addObserver( this );
-			} else if( _accessor.isBindable( _name ) ) {
+			} else if( _target is IEventDispatcher && _accessor.isBindable( _name ) ) {
 				IEventDispatcher( _target ).addEventListener( "propertyChange", 
 					onPropertyChanged );
 			} else if( _target is IPropertyObservable && _accessor.isObservable( _name ) ) {
@@ -195,7 +236,7 @@ package nanosome.notify.bind.impl {
 			_isListening = false;
 			if( _target is IField ) {
 				IField( _target ).removeObserver( this );
-			} else if( _accessor.isBindable( _name ) ) {
+			} else if( _target is IEventDispatcher && _accessor.isBindable( _name ) ) {
 				IEventDispatcher( _target ).removeEventListener( "propertyChange", 
 					onPropertyChanged );
 			} else if( _target is IPropertyObservable && _accessor.isObservable( _name ) ) {

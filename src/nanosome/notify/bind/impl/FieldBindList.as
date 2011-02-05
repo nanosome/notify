@@ -1,4 +1,21 @@
-// @license@
+//  
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License. 
+// 
 
 package nanosome.notify.bind.impl {
 	import nanosome.notify.field.IField;
@@ -120,9 +137,9 @@ package nanosome.notify.bind.impl {
 		public function set master( master: IField ): void {
 			if( master != _master ) {
 				// In case the former master has been registered als unchangable
-				if( _unchangable && !_unchangable.isChangeable ) {
-					throw new Error( "Trying to apply uni-directional binding while"
-										+ " it was already bound to a unchangable field '"
+				if( _unchangable && _unchangable != master && !_unchangable.isChangeable ) {
+					throw new Error( "Trying to apply uni-directional binding to " + master
+										+ " while it was already bound to a unchangable field '"
 										+ _unchangable + "'; cross-lock" );
 				}
 				_master = master;

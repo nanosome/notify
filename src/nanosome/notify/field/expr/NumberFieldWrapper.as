@@ -19,10 +19,10 @@ package nanosome.notify.field.expr {
 			_field.addObserver( this, true, true );
 		}
 		
-		protected function update(): void {
-			_number = _field.value as Number;
+		protected function update( oldValue: *, newValue: * ): void {
+			_number = newValue as Number;
 			_int = _number as int;
-			notifyValueChange( null, null );
+			notifyValueChange( oldValue, newValue );
 		}
 		
 		public function get asNumber(): Number {
@@ -42,7 +42,7 @@ package nanosome.notify.field.expr {
 		}
 		
 		public function onFieldChange( field: IField, oldValue: * = null, newValue: * = null ): void {
-			update();
+			update( oldValue, newValue );
 		}
 	}
 }

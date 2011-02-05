@@ -17,7 +17,7 @@ package nanosome.notify.field.expr.value {
 		public function getValue( base: Number = 0.0, dpi: Number = 0.0,
 									fontBase: Number = 0.0, xSize: Number = 0.0,
 									fields: Object = null  ): Number {
-			return fields[ _fieldName ];
+			return fields[ _fieldName ] || 0;
 		}
 		
 		public function get requiredFields(): Array {
