@@ -1,3 +1,4 @@
+// @license@ 
 package nanosome.notify.field.expr {
 	import nanosome.notify.field.system.X_SIZE;
 	import nanosome.notify.field.system.FONT_SIZE;

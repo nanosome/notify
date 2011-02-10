@@ -1,3 +1,4 @@
+// @license@ 
 package nanosome.notify.field {
 	/**
  * @author Martin Heidegger mh@leichtgewicht.at

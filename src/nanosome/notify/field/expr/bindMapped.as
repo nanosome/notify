@@ -1,3 +1,4 @@
+// @license@ 
 package nanosome.notify.field.expr {
 	import nanosome.notify.bind.bindFields;
 	import nanosome.notify.bind.watch;

@@ -1,3 +1,4 @@
+// @license@ 
 package nanosome.notify.field.expr {
 	import nanosome.notify.field.IFieldObserver;
 	import nanosome.notify.field.Field;

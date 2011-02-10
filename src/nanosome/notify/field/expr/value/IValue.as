@@ -1,3 +1,4 @@
+// @license@ 
 package nanosome.notify.field.expr.value {
 
 	/**

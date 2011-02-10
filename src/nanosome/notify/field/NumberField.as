@@ -1,8 +1,9 @@
+// @license@ 
 package nanosome.notify.field {
 
 	/**
- * @author Martin Heidegger mh@leichtgewicht.at
- */
+	 * @author Martin Heidegger mh@leichtgewicht.at
+	 */
 	public class NumberField extends Field implements INumberField {
 		
 		private var _number: Number;

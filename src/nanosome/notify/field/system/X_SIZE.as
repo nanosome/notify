@@ -1,3 +1,4 @@
+// @license@ 
 package nanosome.notify.field.system {
 	import nanosome.notify.field.NumberField;
 
