@@ -1,5 +1,6 @@
 // @license@ 
 package nanosome.notify.field.expr {
+	
 	import nanosome.notify.field.expr.operator.ADD;
 	import nanosome.notify.field.expr.operator.DIVIDE;
 	import nanosome.notify.field.expr.operator.IOperator;
@@ -13,14 +14,17 @@ package nanosome.notify.field.expr {
 	import nanosome.notify.field.expr.value.ResolutionDependent;
 	import nanosome.notify.field.expr.value.StaticNumber;
 	import nanosome.notify.field.expr.value.XSize;
+	
 	/**
-	 * @author mh
+	 * Parses and optimizes algebraic Expressions for <code>Expression</code>.
+	 * 
+	 * @author Martin Heidegger mh@leichtgewicht.at
+	 * @version 1.0
 	 */
 	public class ExpressionParser {
 		
-		public static const INSTANCE : ExpressionParser = new ExpressionParser();
-		
-		private static const DPI : Object = {
+		// Maps the units to a dpi proportion
+		private static const DPI : Object = /* String -> Number */ {
 			"cm": 1.0 / 2.54,
 			"mm": 1.0 / 25.4,
 			"pt": 1.0 / 72.0,
@@ -28,7 +32,8 @@ package nanosome.notify.field.expr {
 			"in": 1.0
 		};
 		
-		private const INVALID_CONST_CHARS: Object = {
+		// Characters that are not allowed in constants.
+		private const INVALID_CONST_CHARS: Object = /* String -> Number */ {
 			"+": true,
 			"-": true,
 			"*": true,
@@ -42,27 +47,58 @@ package nanosome.notify.field.expr {
 			"\t": true
 		};
 		
-		private var _numberCache : String;
-		private var _expressionCache : String;
-		private var _position : int;
-		private var _inputString : String;
-		private var _operationStack: Array;
-		private var _rootOperation: Operation;
-		private var _currentOperation: Operation;
-		private var _minusStack: Array;
+		// Stores the current number
+		private var _numberCache: String;
+		
+		// Stores the current expression (after starting a expression with {.. )
+		private var _expressionCache: String;
+		
+		// Stores the current constant (like em, cm, inch,...)
 		private var _constantCache: String;
 		
+		// Stores the position in the expression (important for the exceptions)
+		private var _position: int;
+		
+		// The original input string for the parser
+		private var _inputString: String;
+		
+		// Root operation in the operation tree
+		private var _rootOperation: Operation;
+		
+		// The operations evaluated before the current operation
+		private var _operationStack: Array;
+		
+		// The current operation of the 
+		private var _currentOperation: Operation;
+		
+		// The information about the minus definition for each operation in the stack
+		private var _minusStack: Array;
+		
+		
+		/**
+		 * Constructs a new <code>ExpressionParser</code>
+		 * 
+		 * @see PARSER
+		 */
 		public function ExpressionParser() {
 			super();
 		}
 		
-		public function parse( value: * ): IValue {
-			if( value is IValue ) {
-				return value;
+		/**
+		 * Parses a input value and returns a <code>IValue</code> operation stack.
+		 * 
+		 * @param input to be parsed
+		 * @return <code>IValue</code> that represents the data or <code>null<code> if
+		 *         the input is not reasonable to be parsed (like <code>null<code> or 
+		 *         custom objects
+		 */
+		public function parse( input: * ): IValue {
+			if( input is IValue ) {
+				return input;
 			}
 			else
-			if( value is String ) {
-				var string: String = value;
+			if( input is String ) {
+				var string: String = input;
 				const l: int = string.length;
 				
 				if( /^[ \t\n]*$/.test( string ) ) {
@@ -167,61 +203,20 @@ package nanosome.notify.field.expr {
 					error( ExpressionParseError.NO_VALUE_FOR_OPERATION );
 				}
 				return reduceTree(_rootOperation );
-			} else if( value is Number ) {
-				return StaticNumber.forValue( value );
+			} else if( input is Number ) {
+				return StaticNumber.forValue( input );
 			} else {
 				return null;
 			}
 		}
 		
-		private function endConstant() : void {
-			if( _expressionCache ) {
-				error( ExpressionParseError.EXPRESSION_NOT_CLOSED );
-			} else {
-				if( _constantCache == "px") {
-					addValue( StaticNumber.forValue( useNumber() ) );
-					_constantCache = null;
-				} else if( _constantCache == "em" ) {
-					addValue( new FontSize( useNumber() ) );
-					_constantCache = null;
-				} else if( _constantCache == "ex" ) {
-					addValue( new XSize( useNumber() ) );
-					_constantCache = null;
-				} else {
-					var dpi: Number = DPI[ _constantCache ];
-					if( dpi > 0 ) {
-						addValue( new ResolutionDependent( useNumber() * dpi ) );
-						_constantCache = null;
-					} else {
-						error( ExpressionParseError.UNEXPECTED_CONSTANT );
-					}
-				}
-			}
-		}
-		
-		private function startConstant(chr : String) : void {
-			_constantCache = chr;
-		}
-
-		private function treatMinus() : void {
-			if( !treatLineOp(SUBSTRACT) ) {
-				_minusStack[ _minusStack.length-1 ] = true;
-			}
-		}
-		
-		private function treatLineOp( operator: IOperator ): Boolean {
-			if( _numberCache != "" || _expressionCache || ( _currentOperation.a && !_currentOperation.operator ) ) {
-				setOperator(operator);
-				var newOp: Operation = new Operation();
-				_currentOperation.b = newOp;
-				_currentOperation = newOp;
-				return true;
-			} else {
-				return false;
-			}
-		}
-		
-		private function reduceTree( value: IValue ) : IValue {
+		/**
+		 * Optimizes the operation tree created in the parse process.
+		 * 
+		 * @param value <code>IValue</code> generated by the parsing
+		 * @return cleared <code>IValue</code> expressing what the former did, just cleared
+		 */
+		private function reduceTree( value: IValue ): IValue {
 			if( value is Operation ) {
 				var op: Operation = Operation( value );
 				if( !op.operator ) {
@@ -242,12 +237,15 @@ package nanosome.notify.field.expr {
 						op.b = reduceTree( op.b );
 						
 						if( op.a == StaticNumber.NAN || op.b == StaticNumber.NAN ) {
+							// Any operation with a static NAN will return NAN
 							return StaticNumber.NAN;
 						}
 						if( op.a == StaticNumber.INFINITY || op.b == StaticNumber.INFINITY ) {
+							// Any operations with a static infinity will return infinity
 							return StaticNumber.INFINITY;
 						}
 						if( op.a is StaticNumber && op.b is StaticNumber ) {
+							// Calculate static numbers immediatly
 							return StaticNumber.forValue( op.getValue() );
 						}
 						if( operator == ADD || operator == SUBSTRACT ) {
@@ -323,6 +321,55 @@ package nanosome.notify.field.expr {
 			}
 			return value;
 		}
+		
+		
+		private function endConstant() : void {
+			if( _expressionCache ) {
+				error( ExpressionParseError.EXPRESSION_NOT_CLOSED );
+			} else {
+				if( _constantCache == "px") {
+					addValue( StaticNumber.forValue( useNumber() ) );
+					_constantCache = null;
+				} else if( _constantCache == "em" ) {
+					addValue( new FontSize( useNumber() ) );
+					_constantCache = null;
+				} else if( _constantCache == "ex" ) {
+					addValue( new XSize( useNumber() ) );
+					_constantCache = null;
+				} else {
+					var dpi: Number = DPI[ _constantCache ];
+					if( dpi > 0 ) {
+						addValue( new ResolutionDependent( useNumber() * dpi ) );
+						_constantCache = null;
+					} else {
+						error( ExpressionParseError.UNEXPECTED_CONSTANT );
+					}
+				}
+			}
+		}
+		
+		private function startConstant(chr : String) : void {
+			_constantCache = chr;
+		}
+
+		private function treatMinus() : void {
+			if( !treatLineOp(SUBSTRACT) ) {
+				_minusStack[ _minusStack.length-1 ] = true;
+			}
+		}
+		
+		private function treatLineOp( operator: IOperator ): Boolean {
+			if( _numberCache != "" || _expressionCache || ( _currentOperation.a && !_currentOperation.operator ) ) {
+				setOperator(operator);
+				var newOp: Operation = new Operation();
+				_currentOperation.b = newOp;
+				_currentOperation = newOp;
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
 		
 		private function addChar( chr: String ): void {
 			_numberCache += chr;

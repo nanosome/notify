@@ -1,17 +1,23 @@
 // @license@ 
 package nanosome.notify.field.bool {
+	
 	import nanosome.notify.field.Field;
 	import nanosome.notify.field.IBoolField;
-
+	
 	/**
-	 * @author Martin Heidegger mh@leichtgewicht.at
+	 * Default implementation of <code>IBoolField</code>
+	 * 
+	 * @author Martin Heidegger
+	 * @version 1.0
 	 */
 	public class BoolField extends Field implements IBoolField {
 		
 		private var _bool: Boolean;
+		private var _changeable: Boolean;
 		
-		private var _changeable : Boolean;
-		
+		/**
+		 * Constructs a new <code>BoolField</code> instance 
+		 */
 		public function BoolField( value: Boolean = false, changeable: Boolean = false ) {
 			super( value );
 			_changeable = changeable;
@@ -35,12 +41,12 @@ package nanosome.notify.field.bool {
 			return !_changeable;
 		}
 
-		public function flip() : Boolean {
+		public function flip(): Boolean {
 			value = !_bool;
 			return _bool;
 		}
 		
-		public function yes() : Boolean {
+		public function yes(): Boolean {
 			if( !_bool ) {
 				value = true;
 				return true;
@@ -49,7 +55,7 @@ package nanosome.notify.field.bool {
 			}
 		}
 		
-		public function no() : Boolean {
+		public function no(): Boolean {
 			if( !_bool ) {
 				value = false;
 				return true;

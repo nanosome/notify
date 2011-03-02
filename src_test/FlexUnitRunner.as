@@ -26,11 +26,11 @@ package {
 			core.addListener(new TraceListener());
 			
 			core.run( [
-				//BinderTest,
-				//WatchTest,
-				//FieldTest,
-				//PropertyBroadcasterTest,
-				//DynamicConnectionTest,
+				BinderTest,
+				WatchTest,
+				FieldTest,
+				PropertyBroadcasterTest,
+				DynamicConnectionTest,
 				ExpressionTest
 			] );
 		}

@@ -1,5 +1,9 @@
 // @license@ 
 package nanosome.notify.field.expr {
+	
+	import org.mockito.integrations.inOrder;
+	import nanosome.notify.field.system.DPI;
+	import nanosome.notify.field.IBoolField;
 	import nanosome.notify.field.system.X_SIZE;
 	import nanosome.notify.field.system.FONT_SIZE;
 	import nanosome.notify.field.NumberField;
@@ -8,59 +12,134 @@ package nanosome.notify.field.expr {
 	import nanosome.notify.field.IFieldObserver;
 	import nanosome.notify.field.INumberField;
 	import nanosome.notify.field.expr.value.IValue;
-
-	import flash.system.Capabilities;
+	
 	import flash.utils.Dictionary;
-
+	
 	/**
-	 * @author mh
+	 * <code>Expression</code> is a powerful system to evaluate algebraic expressions.
+	 * 
+	 * <p>Expression takes on a input as string (and parses it) or a number. It allows
+	 * place holders that refer to static and to dynamic values. It also supports
+	 * visual units like "em" or "cm" that allow straight statements.</p>
+	 * 
+	 * <p>The expression syntax has a short hand constructor called <code>expr</code>.
+	 * Its recommended to use this.</p>
+	 * 
+	 * <p>Possible inputs to be parsed might be:</p>
+	 * <listening>
+	 *    expr(1); //　1
+	 *    expr("1"); // 1
+	 *    expr(null); // NaN
+	 *    expr("1+1"); // 2
+	 *    expr("1+{a}/100").field("a",200); // 3
+	 *    expr("1%").base(400); // 4
+	 *    expr("1cm"); // renders the current value in dpi
+	 * </listening>
+	 * 
+	 * <p>Expressions also allow stacked definitions.</p>
+	 * <listening>
+	 *    var e: Expression =
+	 *               expr("{a}*10+2%-{b}+{c}")
+	 *                  .field(a, 90)
+	 *                  .base(200)
+	 *                  .fields({
+	 *                    b: 200,
+	 *                    c: 300
+	 *                  });
+	 *     e.asNumber; // contains 1004
+	 * </listening>
+	 * 
+	 * <p>As soon as you start observe this field it will add itself as observer
+	 * to all the reference fields. Make sure that you unlink from a expression
+	 * properly.</p>
+	 * 
+	 * @author Martin Heidegger mh@leichtgewicht.at
+	 * @version 1.0
+	 * 
+	 * @TODO Expressions still might persist in memory if only weak reference are added implement
+	 *       a clean up mechanism for that case.
 	 */
-	public class Expression extends Field implements IFieldObserver, INumberField {
+	public class Expression extends Field implements IFieldObserver, INumberField, IBoolField {
 		
-		public static const ZERO: Expression = new Expression( 0 );
+		// Empty object to be used to 
 		private static const EMPTY: Object = {};
 		
-		private var _expr: IValue;
-		private var _dpi: Number;
-		private var _fields: Object;
-		private var _number: Number;
+		// Actual dynamic value
+		private var _result: IValue;
+		
+		// Base value to calculate the % values from
 		private var _base: INumberField;
-		private var _fieldRegistry: Dictionary;
-		private var _fieldTargets: Object;
+		
+		// Set of the field names and their number values (used for processing expressions)
+		private var _fields: Object /* String -> Number */;
+		
+		// Contains a list of names under which the the fields are required
+		private var _fieldRegistry: Dictionary /* INumberField -> Array[ String ] */;
+		
+		// Mapping of targets to their names
+		private var _fieldTargets: Object /* String -> INumberField */;
+		
+		// Stores the current value as number
+		private var _number: Number;
+		
+		// Stores the current value as integer
 		private var _int: int;
-
+		
+		/**
+		 * Constructs a new <code>Expression</code>.
+		 * 
+		 * @param expression Expression will be parsed.
+		 * @throws ExpressionParseError if a expression can not be parsed.
+		 */
 		public function Expression( expression: * ) {
 			super();
 			
-			_expr = PARSER.parse( expression );
-			
-			if ( _expr && _expr.requiresFontSize ) {
-				FONT_SIZE.addObserver( this );
-				X_SIZE.addObserver( this );
-			} else {
-				FONT_SIZE.removeObserver( this );
-				X_SIZE.removeObserver( this );
-			}
-			
-			if( _expr ) {
-				if( _expr.requiresDPI ) _dpi = Capabilities.screenDPI;
-				updateValue();
+			_result = PARSER.parse( expression );
+			if( _result ) {
+				if( _result.isStatic ) {
+					_number = _result.getValue();
+					if( _number == Infinity ) {
+						_int = int.MAX_VALUE;
+					} else if( _number == -Infinity ) {
+						_int = int.MIN_VALUE;
+					} else {
+						_int = _number;
+					}
+					_result = null;
+				} else {
+					if( _result.requiresFontSize ) {
+						FONT_SIZE.addObserver( this );
+						X_SIZE.addObserver( this );
+					}
+					if( _result.requiresDPI ) {
+						DPI.addObserver( this );
+					}
+					updateValue();
+					checkAllFields();
+				}
 			} else {
 				_number = NaN;
 				_int = NaN;
 			}
-			
-			checkAllFields();
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		override public function setValue( value: * ): Boolean {
 			return false;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		override public function get value(): * {
 			return _number;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		override public function addObserver( observer: IFieldObserver, executeImmediately: Boolean = false,
 													weakReference: Boolean = false  ): Boolean {
 			var result: Boolean = super.addObserver(observer);
@@ -73,6 +152,9 @@ package nanosome.notify.field.expr {
 			return result;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		override public function removeObserver( observer: IFieldObserver ): Boolean {
 			var result: Boolean = super.removeObserver(observer);
 			if( result ) {
@@ -81,13 +163,23 @@ package nanosome.notify.field.expr {
 			return result;
 		}
 		
-		public function get requiredFields(): Array {
-			return _expr.requiredFields;
+		/**
+		 * List of the fields that are required to properly calculate the value of
+		 * the expression.
+		 */
+		public function get requiredFields(): Array /* String */ {
+			return _result.requiredFields;
 		}
 		
+		/**
+		 * Defines the base to be used when stating "%" values.
+		 * 
+		 * @param value Number to calculate the percentage from.
+		 * @return this expression
+		 */
 		public function base( value: * ): Expression {
 			var base: INumberField = getNumberField( value );
-			if( _expr.requiresBase )
+			if( _result.requiresBase )
 			{
 				var old: INumberField = _base;
 				_base = base;
@@ -98,37 +190,28 @@ package nanosome.notify.field.expr {
 			return this;
 		}
 		
+		/**
+		 * Useful shorthand method to <code>addObserver</code>.
+		 * 
+		 * @param observer observer to be added
+		 * @return this expression
+		 */
 		public function notify( observer: IFieldObserver ): Expression {
 			addObserver( observer );
 			return this;
 		}
 		
-		private function getNumberField( value: * ): INumberField {
-			if( value is INumberField ) {
-				return value;
-			} else if( value is IField ) {
-				return new NumberFieldWrapper( value );
-			} else {
-				return new NumberField( value );
-			}
-		}
-		
-		private function checkObserving( value: INumberField ): Boolean {
-			if( _expr && value ) {
-				if( hasObservers && ( value == _base || _fieldRegistry[ value ] ) ) {
-					value.addObserver( this );
-					return true;
-				} else {
-					value.removeObserver( this );
-				}
-			}
-			return false;
-		}
-		
+		/**
+		 * Defines the value for one <code>field</code> by its <code>fieldName</code>
+		 * 
+		 * @param fieldName Name of the field.
+		 * @param value value for the field
+		 * @return this expression
+		 */
 		public function field( fieldName: String, value: * ): Expression {
 			removeField( fieldName );
 			// Only add the field as important if the expression makes use of it.
-			if( _expr.requiredFields && _expr.requiredFields.indexOf( fieldName ) != -1 )
+			if( _result.requiredFields && _result.requiredFields.indexOf( fieldName ) != -1 )
 			{
 				var target: INumberField = getNumberField( value );
 				if( !_fieldTargets ) {
@@ -136,18 +219,25 @@ package nanosome.notify.field.expr {
 					_fieldTargets = {};
 				}
 				_fieldTargets[ fieldName ] = target;
-				var array: Array = _fieldRegistry[ target ] || ( _fieldRegistry[ target ] = [] );
-				if( array.indexOf( fieldName ) == -1 ) {
-					array.push( fieldName );
+				var namesForValue: Array = _fieldRegistry[ target ] || ( _fieldRegistry[ target ] = [] );
+				if( namesForValue.indexOf( fieldName ) == -1 ) {
+					namesForValue.push( fieldName );
 				}
 				if( checkObserving( target ) ) {
 					( _fields || ( _fields = {} ) )[ fieldName ] = target.asNumber;
-					updateValue();
 				}
+				updateValue();
 			}
 			return this;
 		}
 		
+		/**
+		 * Defines a set of field 
+		 * 
+		 * @param fields New fields to be defined
+		 * @param clearAll Clears all former defined fields.
+		 * @return this expression
+		 */
 		public function fields( fields: Object, clearAll: Boolean = false ): Expression {
 			if( clearAll ) {
 				clearFields();
@@ -200,13 +290,36 @@ package nanosome.notify.field.expr {
 			return this;
 		}
 		
+		private function getNumberField( value: * ): INumberField {
+			if( value is INumberField ) {
+				return value;
+			} else if( value is IField ) {
+				return new NumberFieldWrapper( value );
+			} else {
+				return new NumberField( value );
+			}
+		}
+		
+		private function checkObserving( value: INumberField ): Boolean {
+			if( _result && value ) {
+				if( ( value == _base || _fieldRegistry[ value ] ) ) {
+					value.addObserver( this );
+					return true;
+				} else {
+					value.removeObserver( this );
+				}
+			}
+			return false;
+		}
+		
 		private function updateValue(): void {
-			if( _expr ) {
+			if( _result ) {
 				var base: Number = NaN;
 				if( _base ) {
 					base = _base.asNumber;
 				}
-				var newValue: Number = _expr.getValue( base, _dpi, FONT_SIZE.asNumber, X_SIZE.asNumber, _fields || EMPTY );
+				var newValue: Number = _result.getValue( base, DPI.asNumber, FONT_SIZE.asNumber,
+					X_SIZE.asNumber, _fields || EMPTY );
 				if( newValue != _number ) {
 					if( newValue == Infinity ) {
 						_int = int.MAX_VALUE;
@@ -263,6 +376,26 @@ package nanosome.notify.field.expr {
 		
 		override public function get isChangeable(): Boolean {
 			return false;
+		}
+		
+		public function yes(): Boolean {
+			return false;
+		}
+		
+		public function no(): Boolean {
+			return false;
+		}
+		
+		public function flip(): Boolean {
+			return false;
+		}
+		
+		public function get isTrue(): Boolean {
+			return _int !== 0;
+		}
+		
+		public function get isFalse(): Boolean {
+			return _int === 0;
 		}
 	}
 }

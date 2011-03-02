@@ -3,8 +3,66 @@
 		<description><![CDATA[
 			<div id="shortIntroduction">
 				<p>
-					The nanosome-notify project is a collection mechanisms to notify
-					and listen for changes in a system.
+					The nanosome-notify project is a collection of cool
+					mechanisms to notify others of changes and to listen to
+					changes in a system.
+				</p>
+				<h2>Fields</h2>
+				<p>
+					For some reason every <code>Model</code> out there seems to
+					be broadcasting about changes of a property of a object. Fields
+					are a little bit different. They are holders for just one value
+					and they tell others about changes of that one property.
+				</p>
+				<p>
+					Now that might seem like a downgrade but actually is quite useful if you want
+					to implement without depending to actually know what event or
+					property one needs to listen to. This allows to implement a 
+					lot of neat modules that do not depend to certain interfaces.
+				</p>
+				<p>
+					More in the <a href="nanosome/notify/field/package-detail.html">Fields package docs</a>.
+				</p>
+				<h2>Observable</h2>
+				<p>
+					A classic - with <code>Observable</code> we have a fast,
+					reliable implementation of the classic
+					<a href="http://en.wikipedia.org/wiki/Observer_pattern" target="_blank">Observer pattern</a>.
+					It can be used instead of <code>[Bindable]</code> if you wish
+					- it is certainly faster. It works well with the
+					binding implementation(below) which means it suits particularily
+					for making existing applications faster. 
+				</p>
+				<p>
+					More in the <a href="nanosome/notify/observe/package-detail.html">Observable package docs</a>.
+				</p>
+				<h2>Binding</h2>
+				<p>
+					We have a small function <code>watch</code> that allows to 
+					listen to all properties (and sub-sub properties) of any object.
+					If that objects happen to have <code>[Bindable]</code> or has
+					observable properties it will take advantage of this situation
+					and do all that observing even efficient.
+				</p>
+				<h2>Watching</h2>
+				<p>
+					We implemented <code>watch</code> to make the job of binding
+					two properties together easier. Compared to flex its actually
+					very, very easy: just use <code>bind</code> and you can bind
+					two properties together.
+				</p>
+				<p>
+					All and more in the <a href="nanosome/notify/bind/package-detail.html">Bind package docs</a>.
+				</p>
+				<h2>Expressions</h2>
+				<p>
+					Expressions are a subset of <a href="#fields">Fields</a> that
+					are useful for mathematical expressions that rely on parameters
+					like <code>(a+a/4)</code>. It also offers working with visual
+					units like "cm" or "inch" or "%".
+				</p>
+				<p>
+					Get a full overview of how to use it in the <a href="nanosome/notify/field/expr/package-detail.html">Expression package docs</a>.
 				</p>
 			</div> 
 		]]></description>
@@ -20,10 +78,41 @@
 				of event handling and change broacasting.
 			]]></description>
 		</package>
+		<package name="nanosome.notify.field" >
+			<shortDescription><![CDATA[
+				Single property change broadcasting system that allows abstraction
+				of module input.
+			]]></shortDescription>
+			<description><![CDATA[
+				When creating modules (Classes, Frameworks, etc.) that work with
+				changable input, it can be devastating to hard-code the relationship
+				to single parameters like "mouseX". With <code>IField<code> it is
+				possible to abstract input to a very high degree. It a important
+				system used for binding. Refer to the interface/class documentation
+				for more details.
+			]]></description>
+		</package>
+		<package name="nanosome.notify.field.expr" >
+			<shortDescription><![CDATA[
+				Algebraic expression parsing system, with place holders and visual
+				units.
+			]]></shortDescription>
+			<description><![CDATA[
+				
+			]]></description>
+		</package>
+		<package name="nanosome.notify.field.bool" >
+			<shortDescription><![CDATA[
+				Boo
+			]]></shortDescription>
+			<description><![CDATA[
+				
+			]]></description>
+		</package>
 		<package name="nanosome.notify.bind" >
 			<shortDescription><![CDATA[
 				A advanced binding mechanism which allows to bind regular AS3 classes
-				on property level to each ot.
+				on property level to each other.
 			]]></shortDescription>
 			<description><![CDATA[
 				&lt;p&gt;The Adobe Flex approach of binding in MXML has some serious flaws.

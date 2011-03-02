@@ -46,6 +46,17 @@ package nanosome.notify.field.expr {
 			expr( "1%" );
 		}
 		
+		public function testOptimizations(): void {
+			assertEquals( -1, expr("-1+0").asNumber );
+			assertEquals( -1, expr("-1+(-4+4)").asNumber );
+			assertEquals( -1, expr("0-1").asNumber );
+			assertEquals( -1, expr("0+-1").asNumber );
+			assertEquals( -2, expr("-2/1").asNumber );
+			assertEquals( -3, expr("-3/1").asNumber );
+			assertEquals( -1, expr("0-1").asNumber );
+			assertEquals( -1, expr("0+-1").asNumber );
+		}
+		
 		public function testUnits(): void {
 			
 			assertEquals( 2.56, expr( "1%" ).base( 256 ).asNumber );
@@ -97,7 +108,7 @@ package nanosome.notify.field.expr {
 			assertEquals( NaN, e1.asNumber );
 			assertEquals( NaN, e1.field( "test", testField1 ).asNumber );
 			
-			e1.value = 12;
+			testField1.setValue(12);
 			assertEquals( 12, e1.asNumber );
 		}
 		

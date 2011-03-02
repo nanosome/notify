@@ -33,7 +33,8 @@ package nanosome.notify.field {
 	 * 
 	 * <p>A simple implementation of <code>IField</code> is available as <code>Field</code>.</p>
 	 * 
-	 * @example Example of how to use a field
+	 * <p>Example of how to listen to a field</p>
+	 *    
 	 *    <listening>
 	 *    import nanosome.field.IFieldObserver;
 	 *    import nanosome.field.IField;
@@ -45,6 +46,30 @@ package nanosome.notify.field {
 	 *      public function MyClass( field: IField ) {
 	 *        _field = field;
 	 *        _field.addObserver( this, true );
+	 *      }
+	 *      
+	 *      public function onFieldChange( field: IField, newValue: * = null, oldValue: * = null ): void {
+	 *        if( field == _field ) {
+	 *          trace( Number( _field.value ) + 1 );
+	 *        }
+	 *      }
+	 *    }
+	 *    </listening>
+	 *  
+	 *    <p>Example of how to use a without implementing <code>IFieldObserver</code>, this version is
+	 *    not type-safe and therefore slower but it still works.</p>
+	 *    
+	 *    <listening>
+	 *    import nanosome.field.IFieldObserver;
+	 *    import nanosome.field.IField;
+	 *    
+	 *    class MyClass {
+	 *      
+	 *      private var _field: IField;
+	 *      
+	 *      public function MyClass( field: IField ) {
+	 *        _field = field;
+	 *        _field.listen( onFieldChange );
 	 *      }
 	 *      
 	 *      public function onFieldChange( field: IField, newValue: * = null, oldValue: * = null ): void {

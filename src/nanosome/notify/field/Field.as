@@ -26,27 +26,93 @@ package nanosome.notify.field {
 			}
 		}
 		
+		public final function set value( value: * ): void {
+			setValue( value );
+		}
+		
+		public function setValue( value: * ): Boolean {
+			if( _value != value || ( value is Number && isNaN(value) && isNaN(_value) ) ) {
+				notifyValueChange( _value, _value = value );
+			}
+			return true;
+		}
+		
 		public function get value(): * {
 			return _value;
 		}
 		
+		public function listen( func: Function, executeImmediatly: Boolean = false,
+								weakReference: Boolean=false ): Boolean {
+			var hadObservers: Boolean = false;
+			if( !_functions ) {
+				_functions = FUNCTION_LIST_POOL.getOrCreate();
+				hadObservers = _observers != null;
+			} else {
+				hadObservers = true;
+			}
+			
+			var added: Boolean = _functions.add( func );
+			if( executeImmediatly ) {
+				func( this, null, _value );
+			}
+			
+			if( !added ) {
+				clearFunctions();
+			} else if( !hadObservers && hasObservers ) {
+				onHasObserver();
+			}
+			
+			return added;
+		}
+		
 		public function addObserver( observer: IFieldObserver, executeImmediately: Boolean = false,
 									weakReference: Boolean = false ): Boolean {
+			var hadObservers: Boolean = false;
 			if( !_observers ) {
 				_observers = OBSERVER_LIST_POOL.getOrCreate();
+				hadObservers = _functions != null;
+			} else {
+				hadObservers = true;
 			}
 			
 			var added: Boolean = _observers.add( observer, weakReference );
-			
 			if( executeImmediately ) {
 				observer.onFieldChange( this, null, _value );
 			}
 			
 			if( !added ) {
 				clearObservers();
+			} else if( !hadObservers && hasObservers ) {
+				onHasObserver();
 			}
 			
 			return added;
+		}
+		
+		public function unlisten( func: Function ): Boolean {
+			if( _functions ) {
+				if ( _functions.remove( func ) ) {
+					if( !hasObservers ) onHasNoObserver();
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+		
+		public function removeObserver( observer: IFieldObserver ): Boolean {
+			if( _observers ) {
+				if( _observers.remove( observer ) ) {
+					if( !hasObservers ) onHasNoObserver();
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
 		}
 		
 		protected function get hasObservers(): Boolean {
@@ -58,17 +124,8 @@ package nanosome.notify.field {
 			}
 			return _observers != null || _functions != null;
 		}
-
-		public function removeObserver( observer: IFieldObserver ): Boolean {
-			if( _observers && _observers.remove( observer ) ) {
-				clearObservers();
-				return true;
-			} else {
-				return false;
-			}
-		}
 		
-		private function clearObservers() : void {
+		private function clearObservers(): void {
 			if( _observers.empty ) {
 				OBSERVER_LIST_POOL.returnInstance( _observers );
 				_observers = null;
@@ -82,84 +139,69 @@ package nanosome.notify.field {
 			}
 		}
 		
-		public function hasObserver( observer: IFieldObserver ): Boolean {
-			return _observers && _observers.contains( observer );
-		}
-
-		public function get isChangeable(): Boolean {
-			return true;
-		}
-		
-		public final function set value( value: * ): void {
-			setValue( value );
-		}
-		
-		protected final function notifyStateChange(): void {
-			if( _observers ) {
-				_observers.notifyPropertyChange( this, _value, _value );
-			}
-		}
-		
-		protected function notifyValueChange( oldValue: *, newValue: * ): void {
-			if( _observers ) {
-				_observers.notifyPropertyChange( this, oldValue, newValue );
-			}
-			if( _functions ) {
-				_functions.execute( this, oldValue, newValue );
-			}
-		}
-		
-		public function setValue( value: * ): Boolean {
-			if( _value != value || ( value is Number && isNaN(value) && isNaN(_value) ) ) {
-				notifyValueChange( _value, _value = value );
-			}
-			return true;
-		}
-		
-		public function dispose() : void {
+		public function dispose(): void {
 			if( _functions ) {
 				FUNCTION_LIST_POOL.returnInstance( _functions );
 				_functions = null;
 			}
 			if( _observers ) {
-				OBSERVER_LIST_POOL.returnInstance(_observers);
+				OBSERVER_LIST_POOL.returnInstance( _observers );
 				_observers = null;
 			}
+			onHasNoObserver();
 			value = null;
 		}
 		
 		public function toString() : String {
 			return "[" + getQualifiedClassName( this ) + " value='" + value + "']";
 		}
-
-		public function listen(func : Function, executeImmediatly : Boolean = false, weakReference : Boolean=false) : Boolean {
-			if ( !_functions ) {
-				_functions = FUNCTION_LIST_POOL.getOrCreate();
-			}
-			
-			var added: Boolean = _functions.add( func );
-			if( executeImmediatly ) {
-				func( this, null, _value );
-			}
-			
-			if( !added ) {
-				clearFunctions();
-			}
-			
-			return added;
+		
+		public function hasObserver( observer: IFieldObserver ): Boolean {
+			return _observers && _observers.contains( observer );
 		}
-
-		public function unlisten(func : Function) : Boolean {
-			if( _functions && _functions.remove( func ) ) {
-				clearFunctions();
-				return true;
-			} else {
-				return false;
-			}
+		
+		public function get isChangeable(): Boolean {
+			return true;
 		}
-
+		
 		public function hasListening(func : Function) : Boolean {
 			return _functions && _functions.contains(func);
+		}
+		
+		/**
+		 * Template method to be called if, for what reason soever, there are no
+		 * observers anymore.
+		 */
+		protected function onHasNoObserver(): void {}
+		protected function onHasObserver(): void {}
+		
+		protected function notifyStateChange(): void {
+			notifyValueChange( _value, _value );
+		}
+		
+		protected function notifyValueChange( oldValue: *, newValue: * ): void {
+			var hasObserver: Boolean = false;
+			var hadObserver: Boolean = false;
+			if( _observers ) {
+				hadObserver = true;
+				_observers.notifyPropertyChange( this, oldValue, newValue );
+				if( !_observers.empty ) {
+					hasObserver = true;
+				}
+			}
+			if( _functions ) {
+				hadObserver = true;
+				_functions.execute( this, oldValue, newValue );
+				if( !_functions.empty ) {
+					hasObserver = true;
+				}
+			}
+			if( hadObserver && !hasObserver ) {
+				// hasObservers will also clean all values, could be used different
+				// but this way its faster
+				hasObservers;
+				onHasNoObserver();
+			}
 		}
 	}
 }

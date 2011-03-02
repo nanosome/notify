@@ -11,7 +11,7 @@ package nanosome.notify.bind {
 	 * property.</p>
 	 * 
 	 * <p>This code relies internally heavy on the functionality of <code>watch</code>
-	 * please refer to watch to learn about possible performance problems.</p>
+	 * please refer to <code>watch</code> to learn about possible performance problems.</p>
 	 * 
 	 * <p>Most of the implementation of binding is handled by <code>FieldBinder</code>,
 	 * a util to bind two <code>Field</code>s together, please refer to its documentation

@@ -2,7 +2,10 @@
 package nanosome.notify.field.expr {
 
 	/**
-	 * @author mh
+	 * List of errors that could occur when parsing a <code>Expression</code>
+	 * 
+	 * @author Martin Heidegger mh@leichtgewicht.at
+	 * @version 1.0
 	 */
 	public class ExpressionParseError extends Error {
 		

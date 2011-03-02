@@ -206,9 +206,9 @@ package nanosome.notify.connect.impl {
 				}
 			}
 			
-			var sourceAccess: Accessor = mapping.source;
-			var targetAccess: Accessor = mapping.target;
-			var map: Object = mapping.propertyMap || EMPTY_OBJECT;
+			const sourceAccess: Accessor = mapping.source;
+			const targetAccess: Accessor = mapping.target;
+			const map: Object = mapping.propertyMap || EMPTY_OBJECT;
 			for( var property: String in changes.newValues ) {
 				
 				var targetProperty: String = map[ property ] || property;

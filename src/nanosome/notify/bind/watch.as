@@ -20,7 +20,7 @@ package nanosome.notify.bind {
 	 * 
 	 * @param object Root object to watch.
 	 * @param path Path in the root object of the property
-	 * @return a field that will publish changes if that certain property changes
+	 * @return a field that will publish changes if that property changes
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 * @version 1.0
 	 * @see nanosome.notify.impl.WatchField

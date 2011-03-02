@@ -10,9 +10,9 @@ package nanosome.notify.bind {
 	 * @param fieldA First field to be bound
 	 *             (the value of this <code>IField</code> will be automatically given to second one)
 	 * @param fieldB Second field to be bound
-	 * @return fieldA
+	 * @return The first field "fieldA" that was passed in.
 	 * @see nanosome.notify.bind#bind()
-	 * @see nanosome.notify.bind#unbindMO()
+	 * @see nanosome.notify.bind#unbindField()
 	 * @see nanosome.notify.bind#unbind()
 	 */
 	public function bindFields( fieldA: IField, fieldB: IField, bidirectional: Boolean = true ): IField {
