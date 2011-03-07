@@ -16,8 +16,8 @@ package nanosome.notify.field.bool {
 		private var _isTrue: Boolean;
 		private var _isFalse: Boolean;
 		
-		public function AndField( mos: Array ) {
-			super( mos );
+		public function AndField( fields: Array ) {
+			super( fields );
 		}
 		
 		override protected function notifyValueChange( oldValue: *, newValue: * ): void {

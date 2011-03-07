@@ -1,4 +1,5 @@
 package {
+	import nanosome.notify.field.SpriteTest;
 	import nanosome.notify.field.expr.ExpressionTest;
 	import nanosome.notify.connect.DynamicConnectionTest;
 	import nanosome.notify.bind.BinderTest;
@@ -25,13 +26,16 @@ package {
 			//Add any listeners. In this case, the TraceListener has been added to display results.
 			core.addListener(new TraceListener());
 			
+			STAGE = stage;
+			
 			core.run( [
 				BinderTest,
 				WatchTest,
 				FieldTest,
 				PropertyBroadcasterTest,
 				DynamicConnectionTest,
-				ExpressionTest
+				ExpressionTest,
+				SpriteTest
 			] );
 		}
 	}

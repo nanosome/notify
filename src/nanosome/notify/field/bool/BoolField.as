@@ -24,7 +24,7 @@ package nanosome.notify.field.bool {
 		}
 		
 		override protected function notifyValueChange(oldValue : *, newValue : *) : void {
-			_bool = value as Boolean;
+			_bool = ( value == true );
 			super.notifyValueChange(oldValue, newValue);
 		}
 		

@@ -1,37 +1,64 @@
 // @license@ 
 package nanosome.notify.field.expr.value {
-
 	
 	/**
-	 * @author mh
+	 * <code>FontSize</code> evaluates a value based to the size of the capital "X".
+	 * 
+	 * @author Martin Heidegger mh@leichtgewicht.at
+	 * @version 1.0
 	 */
-	public class FontSize implements IValue {
-		private var _value: Number;
+	public final class FontSize implements IValue {
 		
-		public function FontSize( value : Number ) {
-			_value = value;
+		// Holder for the size in "em"
+		private var _sizeInEm: Number;
+		
+		/**
+		 * 
+		 */
+		public function FontSize( sizeInEm: Number ) {
+			_sizeInEm = sizeInEm;
 		}
 		
-		public function getValue( base: Number = 0.0, dpi: Number = 0.0, fontBase: Number = 0.0, xSize: Number = 0.0, fields: Object = null  ): Number {
-			return _value * fontBase;
+		/**
+		 * @inheritDoc
+		 */
+		public function getValue( base: Number = 0.0, dpi: Number = 0.0,
+									fontBase: Number = 0.0, xSize: Number = 0.0,
+									fields: Object = null ): Number {
+			return _sizeInEm * fontBase;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get requiredFields() : Array {
 			return null;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get requiresBase() : Boolean {
 			return false;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get requiresFontSize() : Boolean {
 			return true;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get requiresDPI() : Boolean {
 			return false;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get isStatic() : Boolean {
 			return false;
 		}

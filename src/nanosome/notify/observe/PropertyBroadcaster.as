@@ -207,7 +207,7 @@ package nanosome.notify.observe {
 					// properties implementation
 					notifyPropertyChange( changes.name, changes.oldValue, changes.newValue );
 				} else {
-					startIterate();
+					var first: Boolean = _isIterating ? subIterate() : _isIterating = true;
 					// Pass the entries to all observers
 					var current: PropertyBroadcasterNode = _first;
 					while( current ) {
@@ -226,7 +226,7 @@ package nanosome.notify.observe {
 						}
 						current = _next;
 					}
-					stopIterate();
+					first ? stopIteration() : stopSubIteration();
 				}
 			}
 		}
@@ -244,7 +244,7 @@ package nanosome.notify.observe {
 				addToChangeMap( name, oldValue, newValue );
 			} else {
 				// Send out to all observers
-				startIterate();
+				var first: Boolean = _isIterating ? subIterate() : _isIterating = true;
 				var current: PropertyBroadcasterNode = _first;
 				while( current ) {
 					_next = current._next;
@@ -261,7 +261,7 @@ package nanosome.notify.observe {
 					}
 					current = _next;
 				}
-				stopIterate();
+				first ? stopIteration() : stopSubIteration();
 			}
 		}
 		

@@ -4,6 +4,8 @@ package nanosome.notify.field.impl {
 	import nanosome.util.list.ListNode;
 
 	/**
+	 * <code>ObserverListNode</code> is a implementation detail of <code>ObserverList</code>.
+	 * 
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 * @version 1.0
 	 */
@@ -16,16 +18,24 @@ package nanosome.notify.field.impl {
 			super();
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		override public function set strong( content: * ): void {
 			strongObserver = IFieldObserver( content );
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		override public function get strong(): * {
 			return strongObserver;
 		}
 		
-		override public function set next( node : ListNode ): void
-		{
+		/**
+		 * @inheritDoc
+		 */
+		override public function set next( node: ListNode ): void {
 			super.next = node;
 			nextObserver = ObserverListNode( node );
 		}

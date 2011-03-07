@@ -17,7 +17,7 @@ package nanosome.notify.field {
 		function get isTrue(): Boolean;
 		
 		/**
-		 * <code>false</code if the content results in a <code>false</code> value. 
+		 * <code>false</code> if the content results in a <code>false</code> value. 
 		 */
 		function get isFalse(): Boolean;
 		

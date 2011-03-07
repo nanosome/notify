@@ -1,40 +1,60 @@
 // @license@ 
 package nanosome.notify.field.expr.value {
-
 	
 	/**
-	 * @author mh
+	 * <code>XSize</code> evaluates a value based to the size of the small "x".
+	 * 
+	 * @author Martin Heidegger mh@leichtgewicht.at
 	 */
-	public class XSize implements IValue {
-		private var _value: Number;
+	public final class XSize implements IValue {
 		
-		public function XSize( value : Number ) {
-			_value = value;
+		private var _factor: Number;
+		
+		public function XSize( factor: Number ) {
+			_factor = factor;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function getValue( base: Number = 0.0, dpi: Number = 0.0,
 									fontBase: Number = 0.0, xSize: Number = 0.0,
 									fields: Object = null ): Number {
-			return _value * xSize;
+			return _factor * xSize;
 		}
 		
-		public function get requiredFields() : Array {
+		/**
+		 * @inheritDoc
+		 */
+		public function get requiredFields(): Array {
 			return null;
 		}
 		
-		public function get requiresBase() : Boolean {
+		/**
+		 * @inheritDoc
+		 */
+		public function get requiresBase(): Boolean {
 			return false;
 		}
 		
-		public function get requiresFontSize() : Boolean {
+		/**
+		 * @inheritDoc
+		 */
+		public function get requiresFontSize(): Boolean {
 			return true;
 		}
 		
-		public function get requiresDPI() : Boolean {
+		/**
+		 * @inheritDoc
+		 */
+		public function get requiresDPI(): Boolean {
 			return false;
 		}
 		
-		public function get isStatic() : Boolean {
+		/**
+		 * @inheritDoc
+		 */
+		public function get isStatic(): Boolean {
 			return false;
 		}
 	}

@@ -1,7 +1,6 @@
 // @license@ 
 package nanosome.notify.field.expr {
 	
-	import org.mockito.integrations.inOrder;
 	import nanosome.notify.field.system.DPI;
 	import nanosome.notify.field.IBoolField;
 	import nanosome.notify.field.system.X_SIZE;
@@ -108,11 +107,11 @@ package nanosome.notify.field.expr {
 					_result = null;
 				} else {
 					if( _result.requiresFontSize ) {
-						FONT_SIZE.addObserver( this );
-						X_SIZE.addObserver( this );
+						FONT_SIZE.addObserver( this, false, true );
+						X_SIZE.addObserver( this, false, true );
 					}
 					if( _result.requiresDPI ) {
-						DPI.addObserver( this );
+						DPI.addObserver( this, false, true );
 					}
 					updateValue();
 					checkAllFields();
@@ -204,6 +203,9 @@ package nanosome.notify.field.expr {
 		/**
 		 * Defines the value for one <code>field</code> by its <code>fieldName</code>
 		 * 
+		 * <p>The value of <code>field</code> is internally stored as <code>
+		 * INumberField</code>.</p>
+		 * 
 		 * @param fieldName Name of the field.
 		 * @param value value for the field
 		 * @return this expression
@@ -248,6 +250,11 @@ package nanosome.notify.field.expr {
 			return this;
 		}
 		
+		/**
+		 * Clears all field references.
+		 * 
+		 * @return this expression
+		 */
 		public function clearFields(): Expression {
 			for( var target: * in _fieldRegistry ) {
 				removeTarget( target );
@@ -255,6 +262,12 @@ package nanosome.notify.field.expr {
 			return this;
 		}
 		
+		/**
+		 * Removes the value registered to one field name
+		 * 
+		 * @param fieldName name of the field to which its registered
+		 * @return this expression
+		 */
 		public function removeField( fieldName: String ): Expression {
 			if( _fieldTargets ) {
 				var target: Expression = _fieldTargets[ fieldName ];
@@ -276,6 +289,23 @@ package nanosome.notify.field.expr {
 			return this;
 		}
 		
+		/**
+		 * Removes one target, no matter to which field name it was assigned
+		 * 
+		 * <listing>
+		 *    var a: NumberField = new NumberField(3);
+		 *    var e: Expression = expr("{a}+{b}+3");
+		 *    e.asNumber; // NaN = NaN + NaN + 3
+		 *    e.fields( {"a":a,"b":b} );
+		 *    e.asNumber; // 9 = 3 + 3 + 3
+		 *    e.removeTarget(a);
+		 *    e.asNumber; // NaN = NaN + NaN + 3;
+		 * </listing>
+		 * 
+		 * @param target Number target that is stored for the field
+		 * @return this expression
+		 * @see #field()
+		 */
 		public function removeTarget( target: INumberField ): Expression {
 			var list: Array = _fieldRegistry[ target ];
 			if( list ) {
@@ -290,6 +320,14 @@ package nanosome.notify.field.expr {
 			return this;
 		}
 		
+		/**
+		 * Gets a <code>NumberField</code> for the input value.
+		 * Will return the value if its a implementation of <code>INumberField</code>
+		 * 
+		 * @param value value to be wrapped if necessary
+		 * @return a <code>INumberField</code> implemation that contains the
+		 *       passed-in value.
+		 */
 		private function getNumberField( value: * ): INumberField {
 			if( value is INumberField ) {
 				return value;
@@ -300,6 +338,14 @@ package nanosome.notify.field.expr {
 			}
 		}
 		
+		/**
+		 * Checks if the passed-in <code>INumberField</code> should be observed
+		 * and adds/removes this instance as listener if that should/shouldnot
+		 * be the case.
+		 * 
+		 * @param value NumberField that should be checked if it should be observed
+		 * @return <code>true</code> if it should be observed
+		 */
 		private function checkObserving( value: INumberField ): Boolean {
 			if( _result && value ) {
 				if( ( value == _base || _fieldRegistry[ value ] ) ) {
@@ -312,6 +358,9 @@ package nanosome.notify.field.expr {
 			return false;
 		}
 		
+		/**
+		 * Renders the value for the expression.
+		 */
 		private function updateValue(): void {
 			if( _result ) {
 				var base: Number = NaN;
@@ -333,6 +382,9 @@ package nanosome.notify.field.expr {
 			}
 		}
 		
+		/**
+		 * Checks all fields, if they should be observed or not.
+		 */
 		private function checkAllFields(): void {
 			var oneFound: Boolean = false;
 			for( var fieldName: String in _fieldTargets ) {
@@ -345,13 +397,24 @@ package nanosome.notify.field.expr {
 			}
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		override public function dispose(): void {
 			super.dispose();
 			clearFields();
 			base( null );
 		}
 		
-		public function onFieldChange( field: IField, oldValue: * = null, newValue: * = null ) : void {
+		/**
+		 * Handles changes of <code>INumberField</code> instances that this
+		 * expression needs.
+		 * 
+		 * @param field Field that changed
+		 * @param newValue new value of that field
+		 * @param oldValue old value of that field
+		 */
+		public function onFieldChange( field: IField, oldValue: * = null, newValue: * = null ): void {
 			if( _fieldRegistry ) {
 				// base might leave a empty registry
 				var fields: Array = _fieldRegistry[ field ];
@@ -366,34 +429,58 @@ package nanosome.notify.field.expr {
 			updateValue();
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get asNumber(): Number {
 			return _number;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get asInt(): int {
 			return _int;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		override public function get isChangeable(): Boolean {
 			return false;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function yes(): Boolean {
 			return false;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function no(): Boolean {
 			return false;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function flip(): Boolean {
 			return false;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get isTrue(): Boolean {
 			return _int !== 0;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get isFalse(): Boolean {
 			return _int === 0;
 		}

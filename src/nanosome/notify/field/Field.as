@@ -185,14 +185,14 @@ package nanosome.notify.field {
 			if( _observers ) {
 				hadObserver = true;
 				_observers.notifyPropertyChange( this, oldValue, newValue );
-				if( !_observers.empty ) {
+				if( _observers && !_observers.empty ) {
 					hasObserver = true;
 				}
 			}
 			if( _functions ) {
 				hadObserver = true;
 				_functions.execute( this, oldValue, newValue );
-				if( !_functions.empty ) {
+				if( _functions && !_functions.empty ) {
 					hasObserver = true;
 				}
 			}

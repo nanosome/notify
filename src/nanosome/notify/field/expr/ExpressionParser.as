@@ -1,11 +1,14 @@
 // @license@ 
+
 package nanosome.notify.field.expr {
-	
 	import nanosome.notify.field.expr.operator.ADD;
 	import nanosome.notify.field.expr.operator.DIVIDE;
 	import nanosome.notify.field.expr.operator.IOperator;
 	import nanosome.notify.field.expr.operator.MULTIPLY;
 	import nanosome.notify.field.expr.operator.SUBSTRACT;
+	import nanosome.notify.field.expr.value.MINUS_ONE;
+	import nanosome.notify.field.expr.value.ONE;
+	import nanosome.notify.field.expr.value.ZERO;
 	import nanosome.notify.field.expr.value.Field;
 	import nanosome.notify.field.expr.value.FontSize;
 	import nanosome.notify.field.expr.value.IValue;
@@ -15,13 +18,21 @@ package nanosome.notify.field.expr {
 	import nanosome.notify.field.expr.value.StaticNumber;
 	import nanosome.notify.field.expr.value.XSize;
 	
+	
 	/**
 	 * Parses and optimizes algebraic Expressions for <code>Expression</code>.
+	 * 
+	 * <p>The parsers does some optimizations to the expressions passed-in like
+	 * the removal of the divide-operation with <code>x/1</code> and things like that.</p>
+	 * 
+	 * <p>Expressions are parsed to a optimized binary tree consisting of <code>IValue</code>
+	 * instances. <code>Operation</code> is a composite <code>IValue</code> that
+	 * allows to create the binary tree.</p>
 	 * 
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 * @version 1.0
 	 */
-	public class ExpressionParser {
+	public final class ExpressionParser {
 		
 		// Maps the units to a dpi proportion
 		private static const DPI : Object = /* String -> Number */ {
@@ -88,8 +99,8 @@ package nanosome.notify.field.expr {
 		 * Parses a input value and returns a <code>IValue</code> operation stack.
 		 * 
 		 * @param input to be parsed
-		 * @return <code>IValue</code> that represents the data or <code>null<code> if
-		 *         the input is not reasonable to be parsed (like <code>null<code> or 
+		 * @return <code>IValue</code> that represents the data or <code>null</code> if
+		 *         the input is not reasonable to be parsed (like <code>null</code> or 
 		 *         custom objects
 		 */
 		public function parse( input: * ): IValue {
@@ -236,28 +247,20 @@ package nanosome.notify.field.expr {
 						op.a = reduceTree( op.a );
 						op.b = reduceTree( op.b );
 						
-						if( op.a == StaticNumber.NAN || op.b == StaticNumber.NAN ) {
-							// Any operation with a static NAN will return NAN
-							return StaticNumber.NAN;
-						}
-						if( op.a == StaticNumber.INFINITY || op.b == StaticNumber.INFINITY ) {
-							// Any operations with a static infinity will return infinity
-							return StaticNumber.INFINITY;
-						}
 						if( op.a is StaticNumber && op.b is StaticNumber ) {
 							// Calculate static numbers immediatly
 							return StaticNumber.forValue( op.getValue() );
 						}
 						if( operator == ADD || operator == SUBSTRACT ) {
-							if( op.a == StaticNumber.ZERO) {
+							if( op.a == ZERO) {
 								return op.b;
-							} else if( op.b == StaticNumber.ZERO ) {
+							} else if( op.b == ZERO ) {
 								return op.a;
 							}
 						} else if( operator == MULTIPLY || operator == DIVIDE ) {
-							if( op.b == StaticNumber.ONE ) {
+							if( op.b == ONE ) {
 								return op.a;
-							} else if( op.a == StaticNumber.ONE && operator == MULTIPLY ) {
+							} else if( op.a == ONE && operator == MULTIPLY ) {
 								return op.b;
 							}
 						}
@@ -405,7 +408,7 @@ package nanosome.notify.field.expr {
 		private function addValue( value: IValue ) : void {
 			if( _minusStack[ _minusStack.length-1 ]  ) {
 				var op: Operation = new Operation();
-				op.a = StaticNumber.MINUS_ONE;
+				op.a = MINUS_ONE;
 				op.operator = MULTIPLY;
 				op.b = value;
 				value = op;

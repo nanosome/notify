@@ -1,17 +1,23 @@
 // @license@ 
 package nanosome.notify.field.expr {
+	
 	import nanosome.notify.field.IFieldObserver;
 	import nanosome.notify.field.Field;
 	import nanosome.notify.field.IField;
 	import nanosome.notify.field.INumberField;
 	
-	
 	/**
- * @author mh
- */
+	 * Wraps a common <code>IField</code> to be used as <code>INumberField</code>
+	 * 
+	 * @author Martin Heidegger mh@leichtgewicht.at
+	 * @version 1.0
+	 */
 	public class NumberFieldWrapper extends Field implements IFieldObserver, INumberField {
 		
+		// The wrapped field
 		private var _field: IField;
+		
+		// The 
 		private var _number: Number;
 		private var _int: int;
 		

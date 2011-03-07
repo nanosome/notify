@@ -6,8 +6,8 @@ package nanosome.notify.field.bool {
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 */
 	internal class OrField extends AndField {
-		public function OrField( mos: Array ) {
-			super( mos );
+		public function OrField( fields: Array ) {
+			super( fields );
 		}
 		
 		override protected function getValue(): Boolean {
