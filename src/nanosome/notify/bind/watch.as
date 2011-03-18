@@ -1,6 +1,7 @@
 // @license@ 
 package nanosome.notify.bind {
-	import nanosome.notify.bind.impl.PropertyRoot;
+	
+	import nanosome.notify.bind.impl.rootForObject;
 	import nanosome.notify.bind.impl.WatchField;
 	
 	/**
@@ -37,7 +38,7 @@ package nanosome.notify.bind {
 		var pathList: Array = path.split( "." );
 		var propertyName: String = pathList.shift();
 		
-		var propertyMO: WatchField = PropertyRoot.forObject( object ).property( propertyName );
+		var propertyMO: WatchField = rootForObject( object ).property( propertyName );
 		while( propertyName = pathList.shift() ) {
 			propertyMO = propertyMO.property( propertyName );
 		}

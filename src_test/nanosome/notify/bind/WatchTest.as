@@ -1,4 +1,5 @@
 package nanosome.notify.bind {
+	import flash.display.Sprite;
 	import nanosome.notify.observe.IPropertyObserver;
 	import nanosome.util.EnterFrame;
 
@@ -38,16 +39,69 @@ package nanosome.notify.bind {
 			
 			watch( _obj, "test" ).addPropertyObserver( _mock );
 			watch( _obj, "obj.fun" ).addPropertyObserver( _mock );
-			watch( _dynamicInstance, "bindable").addPropertyObserver( _mock );
-			watch( _dynamicInstance, "observable").addPropertyObserver( _mock );
-			watch( _dynamicInstance, "normal").addPropertyObserver( _mock );
-			watch( _dynamicInstance, "bindable.1").addPropertyObserver( _mock );
-			watch( _dynamicInstance, "observable.0").addPropertyObserver( _mock );
+			watch( _dynamicInstance, "bindable" ).addPropertyObserver( _mock );
+			watch( _dynamicInstance, "observable" ).addPropertyObserver( _mock );
+			watch( _dynamicInstance, "normal" ).addPropertyObserver( _mock );
+			watch( _dynamicInstance, "bindable.1" ).addPropertyObserver( _mock );
+			watch( _dynamicInstance, "observable.0" ).addPropertyObserver( _mock );
 			
 			_dynamicInstance.bindable = _arr1;
 			_dynamicInstance.observable = _arr2;
 			_dynamicInstance.normal = _arr3;
 		}
+		
+		private function dummyListener( ...args: Array ): void {
+		}
+		
+		/*
+		 * Event mapping to come in future version
+		 * public function testEventPropertyWatch(): void {
+			eventMap.forType( Sprite ).define( Event.CHANGE, "x", "y" );
+			
+			var sprite: Sprite = new Sprite();
+			sprite.x = 30;
+			sprite.y = 10;
+			var xField: IWatchField = watch( sprite, "x" );
+			var yField: IWatchField = watch( sprite, "y" );
+			
+			assertEquals( 30, xField.value );
+			assertEquals( 10, yField.value );
+			
+			xField.listen( dummyListener );
+			yField.listen( dummyListener );
+			
+			sprite.x = 20;
+			sprite.y = 25;
+			
+			sprite.dispatchEvent( new Event( Event.CHANGE ) );
+			
+			// Now the change event came, nice
+			assertEquals( 20, xField.value );
+			assertEquals( 25, yField.value );
+			
+			eventMap.forType( Sprite ).define( Event.COMPLETE, "x", "y" );
+			
+			sprite.x = 15;
+			sprite.y = 5;
+			
+			sprite.dispatchEvent( new Event( Event.CHANGE ) );
+			
+			// They should stay same because the events changed!
+			assertEquals( 20, xField.value );
+			assertEquals( 25, yField.value );
+			
+			sprite.dispatchEvent( new Event( Event.COMPLETE ) );
+			
+			// Now, with the proper event they should have changed
+			assertEquals( 15, xField.value );
+			assertEquals( 5, yField.value );
+			
+			eventMap.forType( Sprite ).define( null, "x", "y" );
+			
+			
+		}
+		 * 
+		 */
 		
 		public function testPropertyWatch(): void {
 			

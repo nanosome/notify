@@ -84,6 +84,7 @@ package nanosome.notify.observe {
 			_broadcaster.locked = locked;
 		}
 		
+		
 		/**
 		 * @inheritDoc
 		 */

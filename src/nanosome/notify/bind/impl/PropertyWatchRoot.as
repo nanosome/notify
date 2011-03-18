@@ -1,39 +1,22 @@
 // @license@ 
 package nanosome.notify.bind.impl {
+	
+	import nanosome.util.UID;
 	import nanosome.util.access.Accessor;
 	import nanosome.util.access.accessFor;
 	
-	import nanosome.util.UID;
-	
-	
-
 	import flash.utils.Dictionary;
 	
 	/**
-	 * @author mh
+	 * @author Martin Heidegger mh@leichtgewicht.at
 	 */
-	public class PropertyRoot extends UID {
-		
-		private static const _registry: Dictionary = new Dictionary( true );
-		private static const _nullWatcher: PropertyRoot = new PropertyRoot( null );
-		
-		public static function forObject( object: * ): PropertyRoot {
-			if( object ) {
-				var root: PropertyRoot = _registry[ object ];
-				if( !root ) {
-					root = _registry[ object ] = new PropertyRoot( object );
-				}
-				return root;
-			} else {
-				return _nullWatcher;
-			}
-		}
+	public class PropertyWatchRoot extends UID {
 		
 		private var _propertyWatcherMap: Dictionary;
 		private var _accessor: Accessor;
 		private var _target: *;
 		
-		public function PropertyRoot( target: * = null ) {
+		public function PropertyWatchRoot( target: * = null ) {
 			_target = target;
 		}
 		
@@ -53,7 +36,7 @@ package nanosome.notify.bind.impl {
 				}
 			}
 			
-			propertyWatcher = new WatchField( _target, name,
+			propertyWatcher = new WatchField( _target, _accessor, name,
 				_target, name, this );
 			
 			_propertyWatcherMap[ propertyWatcher ] = true;

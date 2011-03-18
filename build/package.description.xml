@@ -86,7 +86,7 @@
 			<description><![CDATA[
 				When creating modules (Classes, Frameworks, etc.) that work with
 				changable input, it can be devastating to hard-code the relationship
-				to single parameters like "mouseX". With <code>IField<code> it is
+				to single parameters like "mouseX". With <code>IField</code> it is
 				possible to abstract input to a very high degree. It a important
 				system used for binding. Refer to the interface/class documentation
 				for more details.
@@ -103,7 +103,7 @@
 		</package>
 		<package name="nanosome.notify.field.bool" >
 			<shortDescription><![CDATA[
-				Boo
+				Boolean fields with support boolean operations on fields.
 			]]></shortDescription>
 			<description><![CDATA[
 				

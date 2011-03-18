@@ -2,7 +2,7 @@
 <launchConfiguration type="com.powerflasher.fdt.ui.MxmlcGroup">
 <stringAttribute key="APP_ARGUMENTS" value=""/>
 <stringAttribute key="ARGUMENTS" value=""/>
-<booleanAttribute key="KILL_PREVIUOS_VIEWER" value="false"/>
+<booleanAttribute key="KILL_PREVIUOS_VIEWER" value="true"/>
 <stringAttribute key="LAUNCHER_DEPENDENCIES" value="[Self]"/>
 <stringAttribute key="MAIN_CLASS" value="src_test/FlexUnitRunner.as"/>
 <stringAttribute key="OUTPUT" value="bin/FlexUnitRunner.swf"/>

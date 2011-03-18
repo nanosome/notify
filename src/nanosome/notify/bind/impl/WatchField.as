@@ -1,34 +1,38 @@
-// @license@ 
-
+// @license@
 package nanosome.notify.bind.impl {
-	import nanosome.util.access.Accessor;
-	import nanosome.util.access.accessFor;
+	
 	import nanosome.notify.bind.IWatchField;
-	
-	
 	import nanosome.notify.field.Field;
-	import nanosome.notify.observe.IPropertyObserver;
-	import nanosome.notify.observe.IPropertyObservable;
-	import nanosome.util.ChangedPropertyNode;
-	import nanosome.notify.observe.PropertyBroadcaster;
-	import nanosome.notify.field.IFieldObserver;
 	import nanosome.notify.field.IField;
-	
+	import nanosome.notify.field.IFieldObserver;
+	import nanosome.notify.observe.IPropertyObservable;
+	import nanosome.notify.observe.IPropertyObserver;
+	import nanosome.notify.observe.PropertyBroadcaster;
+	import nanosome.util.ChangedPropertyNode;
 	import nanosome.util.EnterFrame;
 	import nanosome.util.EveryNowAndThen;
+	import nanosome.util.access.Accessor;
+	import nanosome.util.access.accessFor;
 	import nanosome.util.list.fnc.FunctionList;
-
+	
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
 	
-	
 	/**
+	 * 
+	 * 
 	 * @author Martin Heidegger mh@leichtgewicht.at
+	 * @version 1.0
 	 */
 	public final class WatchField extends Field
 					implements IWatchField, IPropertyObserver, IFieldObserver {
 		
+		
 		private static const PROTECT_FROM_GARBAGE_COLLECTION: Object = {};
+		
+		/**
+		 * 
+		 */
 		private static const ENTER_FRAME_CHECK_LIST: FunctionList = new FunctionList();
 		{
 			EnterFrame.add( ENTER_FRAME_CHECK_LIST.execute );
@@ -45,14 +49,20 @@ package nanosome.notify.bind.impl {
 		private var _fullName: String;
 		private var _isListening: Boolean;
 		
-		public function WatchField( target: *, name: String, originalTarget: *, fullName: String, parent: * ) {
+		private var _valueAccessor: Accessor;
+		
+		/**
+		 * 
+		 */
+		public function WatchField( target: *, accessor: Accessor, name: String,
+									originalTarget: *, fullName: String, parent: * ) {
 			// Reference to parent is IMPORTANT to prevent garbage collection of parent for deep changes
 			_parent = parent;
 			_fullName = fullName;
 			_name = name;
 			_target = target;
 			_broadcaster.target = originalTarget;
-			_accessor = accessFor( target );
+			_accessor = accessor;
 			_value = _accessor.read( target, _name );
 			checkListeners();
 		}
@@ -67,12 +77,12 @@ package nanosome.notify.bind.impl {
 			super.dispose();
 		}
 		
-		public function set target( target: * ): void {
+		public function setTarget( target: *, accessor: Accessor ): void {
 			if( _target != target ) {
 				removeListeners();
 				
 				_target = target;
-				_accessor = accessFor( target );
+				_accessor = accessor;
 				
 				if( !_target ) {
 					internalValue = null;
@@ -84,25 +94,28 @@ package nanosome.notify.bind.impl {
 			}
 		}
 		
+		private function set internalValue( newValue: * ): void {
+			if( _value != newValue || ( newValue is Number && isNaN(newValue) && isNaN(_value) ) ) {
+				if( _childPropertyWatcherMap ) {
+					_valueAccessor = accessFor( newValue );
+					for( var changeWatcher: * in _childPropertyWatcherMap )
+						WatchField( changeWatcher ).setTarget( newValue, _valueAccessor );
+				} else {
+					_valueAccessor = null;
+				}
+				var oldValue: * = _value;
+				_value = newValue;
+				notifyValueChange( oldValue, newValue );
+				_broadcaster.notifyPropertyChange( _fullName, oldValue, newValue );
+			}
+		}
+		
 		override public function setValue( value: * ): Boolean {
 			if( _accessor.write( _target, _name, value ) ) {
 				check();
 				return true;
 			} else {
 				return false;
-			}
-		}
-		
-		private function set internalValue( newValue: * ): void {
-			if( _value != newValue || ( newValue is Number && isNaN(newValue) && isNaN(_value) ) ) {
-				if( _childPropertyWatcherMap ) {
-					for( var changeWatcher: * in _childPropertyWatcherMap )
-						WatchField( changeWatcher ).target = newValue;
-				}
-				var oldValue: * = _value;
-				_value = newValue;
-				notifyValueChange( oldValue, newValue );
-				_broadcaster.notifyPropertyChange( _fullName, oldValue, newValue );
 			}
 		}
 		
@@ -116,7 +129,10 @@ package nanosome.notify.bind.impl {
 					}
 				}
 			}
-			propertyWatcher = new WatchField( _value, name, _broadcaster.target, _fullName + "." + name, this );
+			if( !_valueAccessor ) {
+				_valueAccessor = accessFor( _value );
+			}
+			propertyWatcher = new WatchField( _value, _valueAccessor, name, _broadcaster.target, _fullName + "." + name, this );
 			_childPropertyWatcherMap[ propertyWatcher ] = true;
 			checkListeners();
 			EveryNowAndThen.add( checkPropertyWatcher );
@@ -168,30 +184,8 @@ package nanosome.notify.bind.impl {
 			}
 			return false;
 		}
-	
-		override public function addObserver(observer : IFieldObserver, executeImmediately : Boolean = false, weakReference : Boolean = false) : Boolean {
-			var result: Boolean = super.addObserver(observer, executeImmediately, weakReference);
-			if( result ) checkListeners();
-			return result;
-		}
-	
-		override public function removeObserver(observer : IFieldObserver) : Boolean {
-			var result: Boolean = super.removeObserver(observer);
-			if( result ) checkListeners();
-			return result;
-		}
-	
-		override public function listen(func: Function, executeImmediately : Boolean = false, weakReference : Boolean = false) : Boolean {
-			var result: Boolean = super.listen(func, executeImmediately, weakReference);
-			if( result ) checkListeners();
-			return result;
-		}
-	
-		override public function unlisten(func: Function) : Boolean {
-			var result: Boolean = super.unlisten(func);
-			if( result ) checkListeners();
-			return result;
-		}
+		
+		
 		
 		public function removePropertyObserver( observer: IPropertyObserver ): Boolean {
 			if( _broadcaster.remove( observer ) ) {
@@ -261,7 +255,16 @@ package nanosome.notify.bind.impl {
 			check();
 		}
 		
-		private function check(): void {
+		override protected function onHasObserver(): void {
+			checkListeners();
+		}
+		
+		override protected function onHasNoObserver(): void {
+			checkListeners();
+		}
+		
+		private function check( e: * = null ): void {
+			e;
 			var newValue: * = _accessor.read( _target, _name );
 			if( _value != newValue ) {
 				internalValue = newValue;
