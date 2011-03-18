@@ -46,6 +46,20 @@ package nanosome.notify.observe {
 			_broadcaster.target = this;
 		}
 		
+		[Observable]
+		override public function set visible( visible: Boolean ): void {
+			if( this.visible != visible ) {
+				notifyPropertyChange( "visible", !visible, super.visible = visible );
+			}
+		}
+		
+		[Observable]
+		override public function set alpha( alpha: Number ): void {
+			if( this.alpha != alpha ) {
+				notifyPropertyChange( "alpha", this.alpha, super.alpha = alpha );
+			}
+		}
+		
 		/**
 		 * @inheritDoc
 		 */
@@ -83,7 +97,6 @@ package nanosome.notify.observe {
 		public function set locked( locked: Boolean ): void {
 			_broadcaster.locked = locked;
 		}
-		
 		
 		/**
 		 * @inheritDoc
