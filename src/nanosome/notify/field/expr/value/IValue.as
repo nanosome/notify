@@ -46,5 +46,13 @@ package nanosome.notify.field.expr.value {
 		 * <code>true</code> if the value is static and nothing will change it.
 		 */
 		function get isStatic(): Boolean;
+		
+		/**
+		 * Tests if the passed in value matches this value.
+		 * 
+		 * @param value value to test against
+		 * @return <code>true</code> if its equals;
+		 */
+		function equals( value: IValue ): Boolean;
 	}
 }

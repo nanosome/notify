@@ -134,6 +134,7 @@ package nanosome.notify.connect {
 			assertEquals( "2", _objB["x"] );
 			assertStrictlyEquals( "3", _objB["c"] );
 			assertEquals( 7, _objA["e"] );
+			
 			assertFalse( _objB.hasOwnProperty("f") );
 			assertStrictlyEquals( 0, _objB["g"] );
 			assertEquals( 15, _objB["y"] );

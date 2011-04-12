@@ -1,6 +1,5 @@
 package nanosome.notify.bind {
-	import flash.display.Sprite;
-	import nanosome.notify.observe.IPropertyObserver;
+	import nanosome.notify.field.IFieldObserver;
 	import nanosome.util.EnterFrame;
 
 	import org.mockito.integrations.flexunit3.MockitoTestCase;
@@ -14,7 +13,7 @@ package nanosome.notify.bind {
 	 */
 	public class WatchTest extends MockitoTestCase {
 		
-		private var _mock: IPropertyObserver;
+		private var _mock: IFieldObserver;
 		private var _obj : Object;
 		private var _call : Function;
 		private var _dynamicInstance : DynamicClass;
@@ -23,13 +22,13 @@ package nanosome.notify.bind {
 		private var _arr3 : Array;
 		
 		public function WatchTest() {
-			super( [ IPropertyObserver ] );
+			super( [ IFieldObserver ] );
 		}
 		
 		override public function setUp() : void {
 			super.setUp();
 			
-			_mock = mock( IPropertyObserver );
+			_mock = mock( IFieldObserver );
 			
 			_obj = {};
 			_arr1 = [];
@@ -37,20 +36,20 @@ package nanosome.notify.bind {
 			_arr3 = [];
 			_dynamicInstance = new DynamicClass( int.MAX_VALUE-3 );
 			
-			watch( _obj, "test" ).addPropertyObserver( _mock );
-			watch( _obj, "obj.fun" ).addPropertyObserver( _mock );
-			watch( _dynamicInstance, "bindable" ).addPropertyObserver( _mock );
-			watch( _dynamicInstance, "observable" ).addPropertyObserver( _mock );
-			watch( _dynamicInstance, "normal" ).addPropertyObserver( _mock );
-			watch( _dynamicInstance, "bindable.1" ).addPropertyObserver( _mock );
-			watch( _dynamicInstance, "observable.0" ).addPropertyObserver( _mock );
+			watch( _obj, "test" ).addObserver( _mock );
+			watch( _obj, "obj.fun" ).addObserver( _mock );
+			watch( _dynamicInstance, "bindable" ).addObserver( _mock );
+			watch( _dynamicInstance, "observable" ).addObserver( _mock );
+			watch( _dynamicInstance, "normal" ).addObserver( _mock );
+			watch( _dynamicInstance, "bindable.1" ).addObserver( _mock );
+			watch( _dynamicInstance, "observable.0" ).addObserver( _mock );
 			
 			_dynamicInstance.bindable = _arr1;
 			_dynamicInstance.observable = _arr2;
 			_dynamicInstance.normal = _arr3;
 		}
 		
-		private function dummyListener( ...args: Array ): void {
+		private function doubleBind( ...args: Array ): void {
 		}
 		
 		/*
@@ -105,8 +104,8 @@ package nanosome.notify.bind {
 		
 		public function testPropertyWatch(): void {
 			
-			inOrder().verify().that( _mock.onPropertyChange( _dynamicInstance, "bindable", undefined, _arr1 ) );
-			inOrder().verify().that( _mock.onPropertyChange( _dynamicInstance, "observable", undefined, _arr2 ) );
+			inOrder().verify().that( _mock.onFieldChange( watch( _dynamicInstance, "bindable" ), undefined, _arr1 ) );
+			inOrder().verify().that( _mock.onFieldChange( watch( _dynamicInstance, "observable" ), undefined, _arr2 ) );
 			
 			_obj["test"] = true;
 			_obj["obj"]  = { fun: "hi" };
@@ -124,7 +123,7 @@ package nanosome.notify.bind {
 			watch( _dynamicInstance, "anything" ).value = obj;
 			assertEquals( _dynamicInstance["anything"], obj );
 			watch( _dynamicInstance, "anything.something" ).value = "Super!";
-			assertEquals( obj["something"], "Super!" );
+			assertEquals( "Super!", obj["something"] );
 			watch( _dynamicInstance, "nothing.something" ).value = "What?";
 			assertFalse( watch( _dynamicInstance, "nothing.something" ).setValue( "What?" ) );
 		}
@@ -138,9 +137,9 @@ package nanosome.notify.bind {
 		}
 		
 		private function verifyCalled1( event: Event ) : void {
-			inOrder().verify().that( _mock.onPropertyChange( _obj, "test", undefined, true ));
-			inOrder().verify().that( _mock.onPropertyChange( _obj, "obj.fun", undefined, "hi") );
-			inOrder().verify().that( _mock.onPropertyChange( _dynamicInstance, "normal", undefined, _arr3 ) );
+			inOrder().verify().that( _mock.onFieldChange( watch( _obj, "test" ), undefined, true ));
+			inOrder().verify().that( _mock.onFieldChange( watch( _obj, "obj.fun" ), undefined, "hi") );
+			inOrder().verify().that( _mock.onFieldChange( watch( _dynamicInstance, "normal" ), undefined, _arr3 ) );
 			
 			_dynamicInstance.bindable.push( "b" );
 			_dynamicInstance.bindable.push( "c" );
@@ -153,20 +152,20 @@ package nanosome.notify.bind {
 		}
 		
 		private function verifyCalled2( e: Event ) : void {
-			inOrder().verify().that( _mock.onPropertyChange( _dynamicInstance, "bindable.1", undefined, "c" ) );
-			inOrder().verify().that( _mock.onPropertyChange( _dynamicInstance, "observable.0", undefined, "1" ) );
-			inOrder().verify().that( _mock.onPropertyChange( _obj, "obj.fun", "hi", "a") );
+			inOrder().verify().that( _mock.onFieldChange( watch( _dynamicInstance, "bindable.1" ), undefined, "c" ) );
+			inOrder().verify().that( _mock.onFieldChange( watch( _dynamicInstance, "observable.0" ), undefined, "1" ) );
+			inOrder().verify().that( _mock.onFieldChange( watch( _obj, "obj.fun" ), "hi", "a") );
 			_obj["obj"] = null;
 			
 			_dynamicInstance.bindable = [ "f", "g" ];
 			
-			inOrder().verify().that( _mock.onPropertyChange( _dynamicInstance, "bindable.1", "c", "g" ) );
+			inOrder().verify().that( _mock.onFieldChange( watch( _dynamicInstance, "bindable.1" ), "c", "g" ) );
 			
 			async( verifyCalled3 );
 		}
 		
 		private function verifyCalled3( e: Event ): void {
-			inOrder().verify().that( _mock.onPropertyChange( _obj, "obj.fun", "a", undefined ) );
+			inOrder().verify().that( _mock.onFieldChange( watch( _obj, "obj.fun" ), "a", undefined ) );
 			lastCall();
 		}
 		
@@ -178,14 +177,16 @@ package nanosome.notify.bind {
 		override public function tearDown() : void {
 			super.tearDown();
 			lastCall();
-			watch( _obj, "test" ).removePropertyObserver( _mock );
-			watch( _obj, "obj.fun" ).removePropertyObserver( _mock );
-			watch( _dynamicInstance, "bindable").removePropertyObserver( _mock );
-			watch( _dynamicInstance, "observable").removePropertyObserver( _mock );
-			watch( _dynamicInstance, "normal").removePropertyObserver( _mock );
-			watch( _dynamicInstance, "bindable.1").removePropertyObserver( _mock );
-			watch( _dynamicInstance, "observable.0").removePropertyObserver( _mock );
+			watch( _obj, "test" ).removeObserver( _mock );
+			watch( _obj, "obj.fun" ).removeObserver( _mock );
+			watch( _dynamicInstance, "bindable").removeObserver( _mock );
+			watch( _dynamicInstance, "observable").removeObserver( _mock );
+			watch( _dynamicInstance, "normal").removeObserver( _mock );
+			watch( _dynamicInstance, "bindable.1").removeObserver( _mock );
+			watch( _dynamicInstance, "observable.0").removeObserver( _mock );
 			_mock = null;
 		}
+		
+		
 	}
 }

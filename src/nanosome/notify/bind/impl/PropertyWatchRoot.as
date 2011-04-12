@@ -36,8 +36,7 @@ package nanosome.notify.bind.impl {
 				}
 			}
 			
-			propertyWatcher = new WatchField( _target, _accessor, name,
-				_target, name, this );
+			propertyWatcher = new WatchField( _target, _accessor, name, name, this );
 			
 			_propertyWatcherMap[ propertyWatcher ] = true;
 			

@@ -1,5 +1,4 @@
 package nanosome.notify.bind {
-
 	import nanosome.notify.observe.Observable;
 
 	public dynamic class DynamicClass extends Observable {
@@ -31,7 +30,7 @@ package nanosome.notify.bind {
 		}
 		
 		public function set observable( observable: Array ): void {
-			if( _observable != observable ) notifyPropertyChange( "observable", _observable, _observable = observable );
+			if( _observable != observable ) notifyPropertyChange( observableName, _observable, _observable = observable );
 		}
 		
 		public var wasLocked: Boolean;
@@ -50,6 +49,8 @@ package nanosome.notify.bind {
 		}
 	}
 }
+import nanosome.util.access.qname;
+const observableName: QName = qname( "observable" );
 
 class InternalClass {
 }

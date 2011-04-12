@@ -1,10 +1,11 @@
 // @license@ 
 package nanosome.notify.observe {
-	import nanosome.util.access.Changes;
+	import nanosome.util.access.qname;
 	import nanosome.util.ChangedPropertyNode;
 	import nanosome.util.EnterFrame;
 	import nanosome.util.ILockable;
 	import nanosome.util.access.Accessor;
+	import nanosome.util.access.Changes;
 	import nanosome.util.access.accessFor;
 	import nanosome.util.list.List;
 	import nanosome.util.list.ListNode;
@@ -13,6 +14,7 @@ package nanosome.notify.observe {
 
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
+	
 	
 	/**
 	 * <code>PropertyBroadcaster</code> is a <strong>util</strong> to implement
@@ -165,16 +167,16 @@ package nanosome.notify.observe {
 			var changes: Changes = _accessor.updateStorage( _target, _storage );
 			if( changes ) {
 				notifyManyPropertiesChanged( changesToNodes( changes ) );
-				Changes.POOL.returnInstance( changes );
+				CHANGES_POOL.returnInstance( changes );
 			}
 		}
 		
 		private function changesToNodes( changes: Changes ): ChangedPropertyNode {
 			var lastChange: ChangedPropertyNode;
 			var firstChange: ChangedPropertyNode;
-			for( var field: String in changes ) {
+			for( var field: String in changes.newValues ) {
 				var change: ChangedPropertyNode = ChangedPropertyNode.POOL.getOrCreate();
-				change.name = field;
+				change.name = qname( field );
 				change.newValue = changes.newValues[ field ];
 				change.oldValue = changes.oldValues[ field ];
 				lastChange = change.addTo( lastChange );
@@ -238,7 +240,7 @@ package nanosome.notify.observe {
 		 * @param oldValue value that the property had prior to that change
 		 * @param newValue value that the property has now
 		 */
-		public function notifyPropertyChange( name: String, oldValue: *, newValue: * ): void {
+		public function notifyPropertyChange( name: QName, oldValue: *, newValue: * ): void {
 			if( _locked ) {
 				// If locked don't dispatch
 				addToChangeMap( name, oldValue, newValue );
@@ -333,7 +335,7 @@ package nanosome.notify.observe {
 		 * @param oldValue former value of that property
 		 * @param newValue current value of the property
 		 */
-		private function addToChangeMap( name: String, oldValue: *, newValue: * ): void {
+		private function addToChangeMap( name: QName, oldValue: *, newValue: * ): void {
 			if( !_changeMap ) {
 				// lazy initialize the map
 				_changeMap = {};
@@ -403,3 +405,9 @@ package nanosome.notify.observe {
 		}
 	}
 }
+
+import nanosome.util.access.Changes;
+import nanosome.util.pool.IInstancePool;
+import nanosome.util.pool.poolFor;
+
+const CHANGES_POOL: IInstancePool = poolFor( Changes );

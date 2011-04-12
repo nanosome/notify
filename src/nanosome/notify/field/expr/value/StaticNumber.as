@@ -82,5 +82,18 @@ package nanosome.notify.field.expr.value {
 		public function get isStatic(): Boolean {
 			return true;
 		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function equals( value: IValue ): Boolean {
+			if( value == this ) {
+				return true;
+			}
+			if( value is StaticNumber ) {
+				return StaticNumber( value )._value == _value;
+			}
+			return false;
+		}
 	}
 }

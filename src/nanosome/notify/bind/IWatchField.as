@@ -2,7 +2,6 @@
 package nanosome.notify.bind {
 	
 	import nanosome.notify.field.IField;
-	import nanosome.notify.observe.IPropertyObservable;
 	
 	/**
 	 * A <code>IWatchField</code> defines a <code>IField</code> that 
@@ -11,7 +10,7 @@ package nanosome.notify.bind {
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 * @version 1.0
 	 */
-	public interface IWatchField extends IField, IPropertyObservable {
+	public interface IWatchField extends IField {
 		
 		/**
 		 * Path that is watched.

@@ -1,6 +1,7 @@
 package nanosome.notify.observe {
 	import nanosome.util.ChangedPropertyNode;
 	import nanosome.util.UID;
+	import nanosome.util.access.qname;
 	import nanosome.util.pool.IInstancePool;
 	import nanosome.util.pool.poolFor;
 
@@ -39,16 +40,16 @@ package nanosome.notify.observe {
 			
 			_broadcaster.target = this;
 			_broadcaster.add( observer );
-			_broadcaster.notifyPropertyChange( "bunny", 10, 12 );
-			_broadcaster.notifyPropertyChange( "bucks", "a", "b" );
+			_broadcaster.notifyPropertyChange( qname( "bunny" ), 10, 12 );
+			_broadcaster.notifyPropertyChange( qname( "bucks" ), "a", "b" );
 			
 			var first: ChangedPropertyNode = _changeNodePool.getOrCreate();
-			first.name = "bucks";
+			first.name = qname( "bucks" );
 			first.newValue = 12;
 			first.oldValue = 10;
 			
 			var second: ChangedPropertyNode = _changeNodePool.getOrCreate();
-			second.name = "bunny";
+			second.name = qname( "bunny" );
 			second.newValue = "b";
 			second.oldValue = "a";
 			second.addTo( first );
@@ -59,8 +60,8 @@ package nanosome.notify.observe {
 			// be removed if not triggered
 			_broadcaster.locked = true;
 			assertTrue( _broadcaster.locked );
-			_broadcaster.notifyPropertyChange( "bunny", "b", "c" );
-			_broadcaster.notifyPropertyChange( "bucks", 1, 2 );
+			_broadcaster.notifyPropertyChange( qname( "bunny" ), "b", "c" );
+			_broadcaster.notifyPropertyChange( qname( "bucks" ), 1, 2 );
 			_broadcaster.notifyManyPropertiesChanged( first );
 			_broadcaster.locked = false;
 			assertFalse( _broadcaster.locked );
@@ -71,11 +72,11 @@ package nanosome.notify.observe {
 			// Asserts that the notification for many properties puts out the
 			// list in exactly matching order with all values
 			assertObjectEquals( [ {
-					name: "bucks",
+					name: qname( "bucks" ),
 					newValue: 12,
 					oldValue: 10
 				}, {
-					name: "bunny",
+					name: qname( "bunny" ),
 					newValue: "b",
 					oldValue: "a"
 				}], _lastManyProperties);
@@ -84,14 +85,14 @@ package nanosome.notify.observe {
 			_broadcaster.remove( observer );
 			_broadcaster.remove( this );
 			
-			inOrder().verify().that( observer.onPropertyChange( this, "bunny", 10, 12 ) );
-			inOrder().verify().that( observer.onPropertyChange( this, "bucks", "a", "b" ) );
-			inOrder().verify().that( observer.onPropertyChange( this, "bucks", 1, 12 ) );
+			inOrder().verify().that( observer.onPropertyChange( this, qname( "bunny" ), 10, 12 ) );
+			inOrder().verify().that( observer.onPropertyChange( this, qname( "bucks" ), "a", "b" ) );
+			inOrder().verify().that( observer.onPropertyChange( this, qname( "bucks" ), 1, 12 ) );
 			verify( times(3) ).that( observer.onPropertyChange( any(), any(), any(), any() ) );
 			verify( times(1) ).that( observer.onManyPropertiesChanged( any(), any() ));
 		}
 		
-		public function onPropertyChange( observable: *, propertyName: String, oldValue: *, newValue: * ): void {
+		public function onPropertyChange( observable: *, propertyName: QName, oldValue: *, newValue: * ): void {
 		}
 		
 		/**

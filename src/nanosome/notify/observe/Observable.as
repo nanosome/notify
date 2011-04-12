@@ -1,10 +1,13 @@
 // @license@ 
 package nanosome.notify.observe {
-	
-	
+	import nanosome.util.ChangedPropertyNode;
 	import nanosome.util.ILockable;
 	import nanosome.util.IUID;
 	import nanosome.util.UID;
+	import nanosome.util.pool.poolInstance;
+	import nanosome.util.pool.returnInstance;
+	
+	
 	
 	/**
 	 * <code>Observable</code> is a util to easily implement <code>IPropertyObservable</code>.
@@ -37,7 +40,7 @@ package nanosome.notify.observe {
 					implements IPropertyObservable, ILockable, IUID {
 		
 		// Internal broadcaster used to handle all that heavy lifting
-		private const _broadcaster: PropertyBroadcaster = new PropertyBroadcaster();
+		protected var _broadcaster: PropertyBroadcaster = new PropertyBroadcaster();
 		
 		/**
 		 * Constructs the new <code>Observerable</code>
@@ -50,7 +53,10 @@ package nanosome.notify.observe {
 		 * @inheritDoc
 		 */
 		public function dispose(): void {
-			_broadcaster.dispose();
+			if( _broadcaster ) {
+				returnInstance( _broadcaster );
+				_broadcaster = null;
+			}
 		}
 		
 		/**
@@ -71,20 +77,38 @@ package nanosome.notify.observe {
 		 * @inheritDoc
 		 */
 		public function set locked( locked: Boolean ): void {
-			_broadcaster.locked = locked;
+			if( !_broadcaster && locked  ) {
+				_broadcaster = poolInstance( PropertyBroadcaster );
+				_broadcaster.target = this;
+			}
+			if( _broadcaster ) {
+				_broadcaster.locked = locked;
+				if( !locked && _broadcaster.empty ) {
+					returnInstance( _broadcaster );
+					_broadcaster = null;
+				}
+			}
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
 		public function get locked(): Boolean {
-			return _broadcaster.locked;
+			if( _broadcaster ) {
+				return _broadcaster.locked;
+			} else {
+				return false;
+			}
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
 		public final function addPropertyObserver( observer: IPropertyObserver, weak: Boolean = false ): Boolean {
+			if( !_broadcaster ) {
+				_broadcaster = poolInstance( PropertyBroadcaster );
+				_broadcaster.target = this;
+			}
 			return _broadcaster.add( observer, weak );
 		}
 		
@@ -92,7 +116,16 @@ package nanosome.notify.observe {
 		 * @inheritDoc
 		 */
 		public final function removePropertyObserver( observer: IPropertyObserver ): Boolean {
-			return _broadcaster.remove( observer );
+			if( _broadcaster ) {
+				var removed: Boolean = _broadcaster.remove( observer );
+				if( removed && _broadcaster.empty ) {
+					returnInstance( _broadcaster );
+					_broadcaster = null;
+				}
+				return removed;
+			} else {
+				return false;
+			}
 		}
 		
 		/**
@@ -102,8 +135,17 @@ package nanosome.notify.observe {
 		 * @param oldValue Value that the property had prior to the change
 		 * @param newValue Value that the property has now
 		 */
-		protected final function notifyPropertyChange( name: String, oldValue: *, newValue: * ): void {
-			_broadcaster.notifyPropertyChange( name, oldValue, newValue );
+		protected  function notifyPropertyChange( name: QName, oldValue: *, newValue: * ): void {
+			if( _broadcaster ) _broadcaster.notifyPropertyChange( name, oldValue, newValue );
+		}
+		
+		/**
+		 * Notifies all the observers about a list of changes in object structure.
+		 * 
+		 * @param changes Changes that occured
+		 */
+		protected function notifyManyPropertiesChanged( changes: ChangedPropertyNode ): void {
+			if( _broadcaster ) _broadcaster.notifyManyPropertiesChanged( changes );
 		}
 	}
 }

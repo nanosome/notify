@@ -1,4 +1,6 @@
 package nanosome.notify.connect.impl {
+	
+	import nanosome.util.access.qname;
 	import nanosome.util.ChangedPropertyNode;
 	import nanosome.util.EnterFrame;
 	import nanosome.util.ILockable;
@@ -17,7 +19,7 @@ package nanosome.notify.connect.impl {
 			super();
 		}
 		
-		override public function onPropertyChange( observable: *, propertyName : String, oldValue : *, newValue : *) : void {
+		override public function onPropertyChange( observable: *, property: QName, oldValue : *, newValue : *) : void {
 			oldValue;
 			
 			if( !_changesA && !_changesB ) {
@@ -31,7 +33,7 @@ package nanosome.notify.connect.impl {
 				localChanges = _changesB || ( _changesB = objPool.getOrCreate() );
 			}
 			
-			localChanges[ propertyName ] = newValue;
+			localChanges[ property.toString() ] = newValue;
 		}
 		
 		override public function dispose() : void {
@@ -69,7 +71,7 @@ package nanosome.notify.connect.impl {
 		
 		protected function applyChanges(): void {
 			
-			var property: String;
+			var propName: String;
 			var map: Object;
 			var accessA: Accessor = _mapping.source;
 			var accessB: Accessor = _mapping.target;
@@ -87,12 +89,12 @@ package nanosome.notify.connect.impl {
 				
 				if( _changesB ) {
 					map = _mapping.propertyMap;
-					for( property in _changesA ) {
-						delete _changesB[ property ];
-						if( !accessB.write( _objectB, map[ property ], _changesA[ property ] ) ) {
-							accessA.write( _objectA, property, accessB.read( _objectB, map[ property ] ) );
+					for( propName in _changesA ) {
+						delete _changesB[ propName ];
+						if( !accessB.write( _objectB, map[ propName ], _changesA[ propName ] ) ) {
+							accessA.write( _objectA, qname( propName ), accessB.read( _objectB, map[ propName ] ) );
 						}
-						delete _changesA[ property ];
+						delete _changesA[ propName ];
 					}
 				}
 				
@@ -115,11 +117,11 @@ package nanosome.notify.connect.impl {
 				}
 				
 				map = _mappingInv.propertyMap;
-				for( property in _changesB ) {
-					if( !accessA.write( _objectA, map[ property ], _changesB[ property ] ) ) {
-						accessB.write( _objectB, property, accessA.read( _objectA, map[ property ] ) );
+				for( propName in _changesB ) {
+					if( !accessA.write( _objectA, map[ propName ], _changesB[ propName ] ) ) {
+						accessB.write( _objectB, qname( propName ), accessA.read( _objectA, map[ propName ] ) );
 					}
-					delete _changesB[ property ];
+					delete _changesB[ propName ];
 				}
 				
 				if( unlockA ) {

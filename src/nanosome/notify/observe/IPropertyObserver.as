@@ -52,7 +52,7 @@ package nanosome.notify.observe {
 		 * @param newValue new value of the observable
 		 * @param oldValue old value of the observable
 		 */
-		function onPropertyChange( observable: *, propertyName: String, oldValue: *, newValue: * ): void;
+		function onPropertyChange( observable: *, propertyName: QName, oldValue: *, newValue: * ): void;
 		
 		/**
 		 * Triggered if many properties of the instance changed.

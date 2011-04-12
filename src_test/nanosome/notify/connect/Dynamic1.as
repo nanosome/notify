@@ -1,5 +1,6 @@
 package nanosome.notify.connect {
 	import nanosome.notify.observe.Observable;
+	import nanosome.util.access.qname;
 	/**
  * @author Martin Heidegger mh@leichtgewicht.at
  */
@@ -30,7 +31,7 @@ package nanosome.notify.connect {
 		
 		[Observable]
 		public function set i( i: int ): void {
-			if( i != _i ) notifyPropertyChange( "i", _i, _i=i );
+			if( i != _i ) notifyPropertyChange( qname( "i" ), _i, _i=i );
 		}
 		
 		public function get i(): int {

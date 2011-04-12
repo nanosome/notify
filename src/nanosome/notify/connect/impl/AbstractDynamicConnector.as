@@ -1,4 +1,5 @@
 package nanosome.notify.connect.impl {
+	import nanosome.util.access.qname;
 	import nanosome.notify.field.IField;
 	import nanosome.notify.field.IFieldObserver;
 	import nanosome.notify.observe.IPropertyObservable;
@@ -87,7 +88,7 @@ package nanosome.notify.connect.impl {
 						var newValue: * = _cacheA[ property ];
 						if( oldValue != newValue ) {
 							if( !changes ) {
-								changes = Changes.POOL.getOrCreate();
+								changes = CHANGES_POOL.getOrCreate();
 							}
 							changes.oldValues[ targetProperty ] = oldValue;
 							changes.newValues[ targetProperty ] = newValue;
@@ -105,6 +106,7 @@ package nanosome.notify.connect.impl {
 					}
 				}
 				if( changes ) {
+					
 					applyChanges( changes, _objectA, _cacheA, _objectB, _cacheB,
 									mapping, "a", "b" );
 				}
@@ -114,8 +116,7 @@ package nanosome.notify.connect.impl {
 			if( notChanged ) {
 				var i: int = notChanged.length;
 				while( --i-(-1) ) {
-					property = notChanged[ i ];
-					mapping.source.write( _objectA, property, 0 );
+					mapping.source.write( _objectA, notChanged[ i ], 0 );
 				}
 			}
 			
@@ -211,11 +212,11 @@ package nanosome.notify.connect.impl {
 			const map: Object = mapping.propertyMap || EMPTY_OBJECT;
 			for( var property: String in changes.newValues ) {
 				
-				var targetProperty: String = map[ property ] || property;
+				var targetQName: QName = map[ property ] || qname( property );
 				
 				if( otherChanges ) {
-					delete otherChanges.newValues[ targetProperty ];
-					delete otherChanges.oldValues[ targetProperty ];
+					delete otherChanges.newValues[ targetQName.toString() ];
+					delete otherChanges.oldValues[ targetQName.toString() ];
 				}
 				
 				var newValue: * = changes.newValues[ property ];
@@ -227,7 +228,7 @@ package nanosome.notify.connect.impl {
 				}
 				
 				if( targetCache ) {
-					oldValue = targetCache[ targetProperty ];
+					oldValue = targetCache[ targetQName.toString() ];
 					if( oldValue is IField ) {
 						removeField( oldValue, targetIDbase + property );
 					}
@@ -235,10 +236,10 @@ package nanosome.notify.connect.impl {
 				
 				var sourceSuccess: Boolean = true;
 				if( newValue === DELETED ) {
-					targetAccess.remove( target, targetProperty );
+					targetAccess.remove( target, targetQName );
 				} else {
-					if( !targetAccess.write( target, targetProperty, newValue ) ) {
-						if( sourceAccess.write( source, property, 0 ) ) {
+					if( !targetAccess.write( target, targetQName, newValue ) ) {
+						if( sourceAccess.write( source, qname( property ), 0 ) ) {
 							sourceSuccess = true;
 						} else {
 							sourceSuccess = false;
@@ -246,14 +247,14 @@ package nanosome.notify.connect.impl {
 						}
 					}
 					
-					targetCache[ targetProperty ] = newValue;
+					targetCache[ targetQName.toString() ] = newValue;
 					cache[ property ] = newValue;
 					
 					if( newValue is IField ) {
 						if( sourceSuccess ) {
 							addField( newValue, idBase + property );
 						}
-						addField( newValue, targetIDbase + targetProperty );
+						addField( newValue, targetIDbase + targetQName.toString() );
 					}
 				}
 			}
@@ -314,10 +315,10 @@ package nanosome.notify.connect.impl {
 		
 		
 		private function onChangeEvent( e: Event ): void {
-			onPropertyChange( e["target"], e["property"], e["oldValue"], e["newValue"] );
+			onPropertyChange( e["target"], qname( e["property"] ), e["oldValue"], e["newValue"] );
 		}
 		
-		public function onPropertyChange( observable: *, propertyName: String, oldValue: *, newValue: * ): void {
+		public function onPropertyChange( observable: *, propertyName: QName, oldValue: *, newValue: * ): void {
 			var map: MapInformation;
 			var source: * = observable;
 			var target: *;
@@ -329,7 +330,7 @@ package nanosome.notify.connect.impl {
 				target = _objectA;
 			}
 			
-			var targetPropertyName: String = map.propertyMap[ propertyName ];
+			var targetPropertyName: QName = map.propertyMap[ propertyName.toString() ];
 			if( targetPropertyName ) {
 				if( !map.target.write( target, targetPropertyName, newValue ) ) {
 					map.source.write( source, propertyName, map.target.read( target, targetPropertyName ) );
@@ -351,10 +352,15 @@ package nanosome.notify.connect.impl {
 			if( notChanged ) {
 				var i: int = notChanged.length;
 				while( --i-(-1) ) {
-					var property: String = notChanged[ i ];
-					map.source.write( observable, property, 0 );
+					map.source.write( observable,  notChanged[ i ], 0 );
 				}
 			}
 		}
 	}
 }
+
+import nanosome.util.access.Changes;
+import nanosome.util.pool.IInstancePool;
+import nanosome.util.pool.poolFor;
+
+const CHANGES_POOL: IInstancePool = poolFor( Changes );

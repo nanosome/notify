@@ -212,6 +212,8 @@ package nanosome.notify.field.expr {
 		 */
 		public function field( fieldName: String, value: * ): Expression {
 			removeField( fieldName );
+			
+			// TODO: Think about prefix bases watching of values
 			// Only add the field as important if the expression makes use of it.
 			if( _result.requiredFields && _result.requiredFields.indexOf( fieldName ) != -1 )
 			{

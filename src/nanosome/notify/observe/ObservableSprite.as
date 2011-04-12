@@ -1,9 +1,10 @@
 // @license@ 
 package nanosome.notify.observe {
-	
-	
+	import nanosome.util.ChangedPropertyNode;
 	import nanosome.util.DisposableSprite;
 	import nanosome.util.ILockable;
+	import nanosome.util.pool.poolInstance;
+	import nanosome.util.pool.returnInstance;
 	
 	/**
 	 * <code>ObservableSprite</code> is a util to easily implement
@@ -37,26 +38,24 @@ package nanosome.notify.observe {
 					implements IPropertyObservable, ILockable {
 		
 		// Internal broadcaster used to handle all that heavy lifting
-		private const _broadcaster: PropertyBroadcaster = new PropertyBroadcaster();
+		private var _broadcaster: PropertyBroadcaster;
 		
 		/**
 		 * Constructs the new <code>ObserverableSprite</code>
 		 */
-		public function ObservableSprite() {
-			_broadcaster.target = this;
-		}
+		public function ObservableSprite() {}
 		
 		[Observable]
 		override public function set visible( visible: Boolean ): void {
 			if( this.visible != visible ) {
-				notifyPropertyChange( "visible", !visible, super.visible = visible );
+				notifyPropertyChange( visibleName, !visible, super.visible = visible );
 			}
 		}
 		
 		[Observable]
 		override public function set alpha( alpha: Number ): void {
 			if( this.alpha != alpha ) {
-				notifyPropertyChange( "alpha", this.alpha, super.alpha = alpha );
+				notifyPropertyChange( alphaName, this.alpha, super.alpha = alpha );
 			}
 		}
 		
@@ -65,7 +64,10 @@ package nanosome.notify.observe {
 		 */
 		override public function dispose(): void {
 			super.dispose();
-			_broadcaster.dispose();
+			if( _broadcaster ) {
+				returnInstance( _broadcaster );
+				_broadcaster = null;
+			}
 		}
 		
 		
@@ -88,20 +90,38 @@ package nanosome.notify.observe {
 		 * @inheritDoc
 		 */
 		public function get locked(): Boolean {
-			return _broadcaster.locked;
+			if( _broadcaster ) {
+				return _broadcaster.locked;
+			} else {
+				return false;
+			}
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
 		public function set locked( locked: Boolean ): void {
-			_broadcaster.locked = locked;
+			if( !_broadcaster && locked  ) {
+				_broadcaster = poolInstance( PropertyBroadcaster );
+				_broadcaster.target = this;
+			}
+			if( _broadcaster ) {
+				_broadcaster.locked = locked;
+				if( !locked && _broadcaster.empty ) {
+					returnInstance( _broadcaster );
+					_broadcaster = null;
+				}
+			}
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
 		public final function addPropertyObserver( observer: IPropertyObserver, weak: Boolean = false ): Boolean {
+			if( !_broadcaster ) {
+				_broadcaster = poolInstance( PropertyBroadcaster );
+				_broadcaster.target = this;
+			}
 			return _broadcaster.add( observer, weak );
 		}
 		
@@ -109,7 +129,16 @@ package nanosome.notify.observe {
 		 * @inheritDoc
 		 */
 		public final function removePropertyObserver( observer: IPropertyObserver ): Boolean {
-			return _broadcaster.remove( observer );
+			if( _broadcaster ) {
+				var removed: Boolean = _broadcaster.remove( observer );
+				if( removed && _broadcaster.empty ) {
+					returnInstance( _broadcaster );
+					_broadcaster = null;
+				}
+				return removed;
+			} else {
+				return false;
+			}
 		}
 		
 		/**
@@ -119,8 +148,22 @@ package nanosome.notify.observe {
 		 * @param oldValue Value that the property had prior to the change
 		 * @param newValue Value that the property has now
 		 */
-		protected function notifyPropertyChange( name: String, oldValue: *, newValue: * ): void {
-			_broadcaster.notifyPropertyChange( name, oldValue, newValue );
+		protected function notifyPropertyChange( name: QName, oldValue: *, newValue: * ): void {
+			if( _broadcaster ) _broadcaster.notifyPropertyChange( name, oldValue, newValue );
+		}
+		
+		/**
+		 * Notifies all the observers about a list of changes in object structure.
+		 * 
+		 * @param changes Changes that occured
+		 */
+		protected function notifyManyPropertiesChanged( changes: ChangedPropertyNode ): void {
+			if( _broadcaster ) _broadcaster.notifyManyPropertiesChanged( changes );
 		}
 	}
 }
+
+import nanosome.util.access.qname;
+
+const visibleName: QName = qname( "visible" );
+const alphaName: QName = qname( "alpha" );

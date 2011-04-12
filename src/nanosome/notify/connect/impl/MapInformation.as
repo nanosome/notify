@@ -2,6 +2,7 @@ package nanosome.notify.connect.impl {
 	import nanosome.notify.field.Field;
 	import nanosome.notify.field.IField;
 	import nanosome.util.access.Accessor;
+	import nanosome.util.access.qname;
 	import nanosome.util.access.typeMatches;
 	import nanosome.util.invertObject;
 	
@@ -18,7 +19,7 @@ package nanosome.notify.connect.impl {
 		private var _isEntirelyDynamic: Boolean = false;
 		
 		private var _fields: Object;
-		private var _propertyMap: *;
+		private var _propertyMap: Object;
 		private var _hasBindable: Boolean;
 		private var _hasObservable: Boolean;
 		private var _nonEvent: Array;
@@ -55,22 +56,22 @@ package nanosome.notify.connect.impl {
 			_hasBindable = false;
 			_hasObservable = false;
 			
-			for( var propertyName: String in newValue ) {
-				var targetProperty: String = newValue[ propertyName ];
+			for( var sourceFullName: String in newValue ) {
+				var targetFullName: String = newValue[ sourceFullName ];
 				// Target and source should have same properties
-				var typeA: Class = _source.getPropertyType( propertyName );
-				var typeB: Class = _target.getPropertyType( targetProperty );
+				var typeA: Class = _source.getPropertyType( sourceFullName );
+				var typeB: Class = _target.getPropertyType( targetFullName );
 				if( typeA is IField && typeB is IField ) {
-					( fields || ( fields = {}) )[ propertyName ] = targetProperty;
+					( fields || ( fields = {}) )[ sourceFullName ] = targetFullName;
 				}
 				if( typeMatches( typeA, typeB ) ) {
-					propertyMap[ propertyName ] = targetProperty;
-					if( _source.isObservable( propertyName ) ) {
+					propertyMap[ sourceFullName ] = qname( targetFullName );
+					if( _source.isObservable( sourceFullName ) ) {
 						_hasObservable = true;
-					} else if( _source.isBindable( propertyName ) ) {
+					} else if( _source.isBindable( sourceFullName ) ) {
 						_hasBindable = true;
 					} else {
-						( nonEvent || (nonEvent = []) ).push( propertyName );
+						( nonEvent || (nonEvent = []) ).push( qname( sourceFullName ) );
 					}
 				}
 			}
@@ -78,7 +79,7 @@ package nanosome.notify.connect.impl {
 			_nonEvent = nonEvent;
 			_fields = fields;
 			_propertyMap = propertyMap;
-			super.notifyValueChange(oldValue, newValue);
+			super.notifyValueChange( oldValue, newValue );
 		}
 		
 		public function get inverted(): MapInformation {

@@ -84,5 +84,19 @@ package nanosome.notify.field.expr.value {
 		public function get isStatic(): Boolean {
 			return false;
 		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function equals( value: IValue ): Boolean {
+			if( value == this ) {
+				return true;
+			}
+			if( value is Operation ) {
+				var other: Operation = Operation( value );
+				return other.operator == operator && other.a.equals( a ) && other.b.equals( b );
+			}
+			return false;
+		}
 	}
 }

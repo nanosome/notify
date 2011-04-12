@@ -22,7 +22,7 @@ package nanosome.notify.connect.impl {
 			return this;
 		}
 		
-		override public function onPropertyChange( observable: *, propertyName: String, oldValue: *, newValue: * ): void {
+		override public function onPropertyChange( observable: *, propertyName: QName, oldValue: *, newValue: * ): void {
 			var first: Boolean = true;
 			for( var object: * in _weakDictionary ) {
 				if( first ) {
