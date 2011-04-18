@@ -1,6 +1,7 @@
 package nanosome.notify.connect {
 	
 	
+	import nanosome.notify.sampleNS;
 	import nanosome.notify.bind.map.CLASS_MAPPINGS;
 	import flexunit.framework.TestCase;
 
@@ -18,6 +19,7 @@ package nanosome.notify.connect {
 		private var _objA: Object;
 		private var _dictA: Dynamic1;
 		private var _dictB: Dynamic2;
+		private var _dyn3: Dynamic3;
 		
 		private function async( fnc: Function) : void {
 			_call = addAsync( fnc, 1000 );
@@ -30,6 +32,26 @@ package nanosome.notify.connect {
 		private function lastCall() : void {
 			_call = null;
 			EnterFrame.remove( callBack );
+		}
+		
+		public function testSpecialEventConnect(): void {
+			_dyn3 = new Dynamic3();
+			_dyn3.sampleNS::x = "20";
+			_dictB = new Dynamic2();
+			
+			CLASS_MAPPINGS.addMapping( Dynamic3, Dynamic2, {
+				"custom": "a",
+				"nanosome.notify.bind:sampleNs/test/$temp::x": "x"
+			});
+			
+			connect( _dyn3, _dictB );
+			
+			assertEquals( "namespaces shouldnt hinder the connection process", "20", _dictB.x );
+			
+			_dyn3.custom = "me";
+			
+			assertEquals( "The custom event sent by custom= should have trigged " +
+						  "the update of _dictB.a", "me", _dictB.a );
 		}
 		
 		public function testRegularConnect(): void {

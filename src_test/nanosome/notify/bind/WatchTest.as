@@ -1,15 +1,15 @@
 package nanosome.notify.bind {
-	import nanosome.util.access.accessFor;
-	import nanosome.notify.bind.impl.path;
+	import flash.events.Event;
 	import nanosome.notify.field.IFieldObserver;
+	import nanosome.notify.sampleNS;
 	import nanosome.util.EnterFrame;
+	import nanosome.util.access.accessFor;
 	import nanosome.util.access.qname;
-
 	import org.mockito.integrations.flexunit3.MockitoTestCase;
 	import org.mockito.integrations.inOrder;
 	import org.mockito.integrations.mock;
 
-	import flash.events.Event;
+
 
 	/**
 	 * @author Martin Heidegger mh@leichtgewicht.at

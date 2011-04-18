@@ -47,6 +47,9 @@ package nanosome.notify.connect.impl {
 		private var _updateImmediatly: Boolean;
 		private var _fieldReferences: WeakDictionary;
 		
+		private var _customAProps: Object;
+		private var _customBProps: Object;
+		
 		public function AbstractDynamicConnector() {
 			super();
 		}
@@ -100,6 +103,9 @@ package nanosome.notify.connect.impl {
 					for( property in _cacheB ) {
 						targetProperty = map[ property ] || property;
 						if( !_objectA.hasOwnProperty( qname( targetProperty ) ) ) {
+							if( !changes ) {
+								changes = CHANGES_POOL.getOrCreate();
+							}
 							changes.oldValues[ targetProperty ] = _cacheB[ property ];
 							changes.newValues[ targetProperty ] = DELETED;
 							delete _cacheB[ property ];
@@ -128,13 +134,13 @@ package nanosome.notify.connect.impl {
 				EnterFrame.add( compareCacheWithReality );
 			}
 			
-			addRemoveObservers( _objectA, _mapping );
-			addRemoveObservers( _objectB, _mappingInv );
+			_customAProps = addRemoveObservers( _objectA, _customAProps, _mapping );
+			_customBProps = addRemoveObservers( _objectB, _customBProps, _mappingInv );
 			return this;
 		}
 		
 		
-		private function addRemoveObservers( obj: *, mapping: MapInformation = null ): void {
+		private function addRemoveObservers( obj: *, customEvents:Object, mapping: MapInformation = null ): Object {
 			if( mapping && mapping.hasObservable ) {
 				IPropertyObservable( obj ).addPropertyObserver( this, weak );
 			} else if( obj is IPropertyObservable ) {
@@ -144,6 +150,34 @@ package nanosome.notify.connect.impl {
 				IEventDispatcher( obj ).addEventListener( "propertyChange", onChangeEvent, false, 0, weak );
 			} else if( obj is IEventDispatcher ) {
 				IEventDispatcher( obj ).removeEventListener( "propertyChange", onChangeEvent );
+			}
+			var name: String;
+			if( customEvents ) {
+				for( name in customEvents ) {
+					IEventDispatcher( obj ).removeEventListener( name, onEvent );
+				}
+				customEvents = null;
+			}
+			if( mapping && mapping.customEvents ) {
+				customEvents = mapping.customEvents;
+				if( customEvents ) {
+					for( name in customEvents ) {
+						IEventDispatcher( obj ).addEventListener( name, onEvent, false, 0, weak );
+					}
+				}
+			}
+			return customEvents;
+		}
+		
+		private function onEvent( event: Event ): void {
+			var source: Object = event.target;
+			var target: Object = ( source == _objectA ) ? _objectB : _objectA;
+			var mapping: MapInformation = ( source == _objectA ) ? _mapping : _mappingInv;
+			var props: Array = mapping.customEvents[ event.type ];
+			const l: int = props.length;
+			for( var i: int = 0; i < l; ++i ) {
+				var prop: PropertyAccess = props[ i ];
+				PropertyAccess( mapping.propertyMap[ prop ] ).writer.write( target, prop.reader.read( source ) );
 			}
 		}
 		
@@ -158,11 +192,12 @@ package nanosome.notify.connect.impl {
 				objPool.returnInstance( _cacheB );
 				_cacheB = null;
 			}
+			if( _objectA ) addRemoveObservers( _objectA, _customAProps );
+			if( _objectB ) addRemoveObservers( _objectB, _customBProps );
 			_checkA = null;
 			_checkB = null;
 			_objectA = null;
 			_objectB = null;
-			
 			EnterFrame.remove( compareCacheWithReality );
 		}
 		
@@ -289,8 +324,6 @@ package nanosome.notify.connect.impl {
 			if( unlock ) {
 				lockableB.unlock();
 			}
-			
-			changePool.returnInstance( changes );
 		}
 		
 		private function addField( field: IField, id: String ): void {
@@ -365,7 +398,7 @@ package nanosome.notify.connect.impl {
 			}
 		}
 		
-		public function onManyPropertiesChanged( observable: *, changes: ChangedPropertyNode ): void {
+		public function onManyPropertiesChanged( observable: *, changedProps: ChangedPropertyNode ): void {
 			var map: MapInformation;
 			var target: *;
 			if( _objectA == observable ) {
@@ -375,7 +408,7 @@ package nanosome.notify.connect.impl {
 				map = _mappingInv;
 				target = _objectA;
 			}
-			var notChanged: Array = writeAllByNodes( target, changes, map.propertyMap, map.target );
+			var notChanged: Array = writeAllByNodes( target, changedProps, map.propertyMap, map.target );
 			if( notChanged ) {
 				var i: int = notChanged.length;
 				while( --i-(-1) ) {

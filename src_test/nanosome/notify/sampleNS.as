@@ -1,4 +1,4 @@
-package nanosome.notify.bind {
+package nanosome.notify {
 	/**
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 */

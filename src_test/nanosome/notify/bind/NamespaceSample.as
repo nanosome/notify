@@ -1,6 +1,7 @@
 package nanosome.notify.bind {
-	import flash.events.EventDispatcher;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import nanosome.notify.sampleNS;
 	/**
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 */

@@ -10,7 +10,6 @@ package nanosome.notify.connect.impl {
 
 	import flash.utils.Dictionary;
 	
-
 	/**
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 */
@@ -28,6 +27,7 @@ package nanosome.notify.connect.impl {
 		private var _hasObservable: Boolean;
 		private var _nonEvent: Array;
 		private var _syncLock: Boolean;
+		private var _events: Object;
 		
 		public function MapInformation( source: Accessor, target: Accessor, propertyMapping: Object, inverted: MapInformation = null ) {
 			
@@ -89,6 +89,7 @@ package nanosome.notify.connect.impl {
 			}
 			
 			_nonEvent = nonEvent;
+			_events = events;
 			_fields = fields;
 			_propertyMap = propertyMap;
 			super.notifyValueChange( oldValue, newValue );
@@ -131,7 +132,11 @@ package nanosome.notify.connect.impl {
 		public function get nonEventSending(): Array {
 			return _nonEvent;
 		}
-
+		
+		public function get customEvents(): Object {
+			return _events;
+		}
+		
 		public function get fields() : Object {
 			return _fields;
 		}

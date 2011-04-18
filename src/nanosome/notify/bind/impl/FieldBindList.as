@@ -1,5 +1,4 @@
 // @license@ 
-
 package nanosome.notify.bind.impl {
 	import nanosome.notify.field.IField;
 	import nanosome.util.IUID;

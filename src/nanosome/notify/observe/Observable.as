@@ -22,14 +22,22 @@ package nanosome.notify.observe {
 	 *       private var _member: *;
 	 *       
 	 *       public function set member( member: * ): void {
-	 *         if( member != _member ) notifyPropertyChanged( "member", _member, _member = member );
+	 *         if( member != _member ) notifyPropertyChanged( Q_member, _member, _member = member );
 	 *       }
 	 *       
 	 *       public function get member(): * {
 	 *         return _member;
 	 *       }
 	 *     }
+	 *     
+	 *     import nanosome.util.access.qname;
+	 *     
+	 *     private const Q_member: QName = qname( "member" );
+	 *     // for performance reasons we store the access to the member locally
 	 *   </code>
+	 * 
+	 * <p>If a <code>Observable</code> is <code>locked</code> it will store all 
+	 * the changes and deploy them upon release.</p>
 	 * 
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 * @version 1.0

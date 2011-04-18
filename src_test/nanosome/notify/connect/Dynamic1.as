@@ -1,6 +1,8 @@
 package nanosome.notify.connect {
 	import nanosome.notify.observe.Observable;
 	import nanosome.util.access.qname;
+	import nanosome.notify.sampleNS;
+	
 	/**
  * @author Martin Heidegger mh@leichtgewicht.at
  */

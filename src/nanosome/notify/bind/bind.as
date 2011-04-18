@@ -28,6 +28,7 @@ package nanosome.notify.bind {
 	 * @see nanosome.notify.bind.impl#BINDER
 	 * @see nanosome.notify.bind.impl.FieldBinder
 	 * @see nanosome.notify.bind#watch()
+	 * @see nanosome.notify.bind#path
 	 * @version 1.0
 	 */
 	public function bind( objectA: *, pathA: *, objectB: *, pathB: *, bidirectional: Boolean = true ): IField {

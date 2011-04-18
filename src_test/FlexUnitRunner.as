@@ -1,17 +1,18 @@
 package {
+	import flash.display.Sprite;
+	import nanosome.notify.bind.BinderTest;
+	import nanosome.notify.bind.TestPath;
+	import nanosome.notify.bind.WatchTest;
+	import nanosome.notify.connect.DynamicConnectionTest;
 	import nanosome.notify.connect.StaticConnectionTest;
+	import nanosome.notify.field.FieldTest;
 	import nanosome.notify.field.SpriteTest;
 	import nanosome.notify.field.expr.ExpressionTest;
-	import nanosome.notify.connect.DynamicConnectionTest;
-	import nanosome.notify.bind.BinderTest;
-	import nanosome.notify.bind.WatchTest;
-	import nanosome.notify.field.FieldTest;
 	import nanosome.notify.observe.PropertyBroadcasterTest;
-
 	import org.flexunit.internals.TraceListener;
 	import org.flexunit.runner.FlexUnitCore;
 
-	import flash.display.Sprite;
+
 
 	[SWF(backgroundColor="#FFFFFF", frameRate="31", width="640", height="480")]
 
@@ -37,7 +38,8 @@ package {
 				DynamicConnectionTest,
 				StaticConnectionTest,
 				ExpressionTest,
-				SpriteTest
+				SpriteTest,
+				TestPath
 			] );
 		}
 	}
