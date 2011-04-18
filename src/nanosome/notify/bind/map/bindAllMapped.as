@@ -1,4 +1,6 @@
+// @license@
 package nanosome.notify.bind.map {
+	
 	import nanosome.notify.bind.watch;
 	import nanosome.notify.bind.impl.BINDER;
 	

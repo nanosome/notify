@@ -1,5 +1,5 @@
+// @license@
 package nanosome.notify.bind.map {
-	
 	
 	/**
 	 * @author Martin Heidegger mh@leichtgewicht.at

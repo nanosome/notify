@@ -1,5 +1,6 @@
 // @license@
 package nanosome.notify.bind.impl {
+	
 	import nanosome.notify.bind.IWatchField;
 	import nanosome.notify.field.Field;
 	import nanosome.notify.field.IField;
@@ -10,8 +11,8 @@ package nanosome.notify.bind.impl {
 	import nanosome.util.EnterFrame;
 	import nanosome.util.EveryNowAndThen;
 	import nanosome.util.access.Accessor;
+	import nanosome.util.access.PropertyAccess;
 	import nanosome.util.access.accessFor;
-	import nanosome.util.access.qname;
 	import nanosome.util.list.fnc.FunctionList;
 
 	import flash.events.IEventDispatcher;
@@ -37,7 +38,7 @@ package nanosome.notify.bind.impl {
 			EnterFrame.add( ENTER_FRAME_CHECK_LIST.execute );
 		}
 		
-		private var _accessor: Accessor;
+		private var _propertyAccessor: PropertyAccess;
 		private var _parent: *;
 		
 		private var _childPropertyWatcherMap: Dictionary;
@@ -46,23 +47,22 @@ package nanosome.notify.bind.impl {
 		private var _isListening: Boolean;
 		
 		private var _valueAccessor: Accessor;
-		private var _fullName: String;
+		private var _name: String;
 		private var _qName: QName;
-		private var _fullQName: QName;
 		
 		/**
 		 * 
 		 */
-		public function WatchField( target: *, accessor: Accessor, name: String, fullName: String, parent: * ) {
+		public function WatchField( target: *, accessor: Accessor, name: QName, parent: * ) {
 			// Reference to parent is IMPORTANT to prevent garbage collection of parent for deep changes
 			_parent = parent;
-			_fullPath = fullName;
-			_fullQName = qname( fullName );
-			_fullName = name;
-			_qName = qname( name );
+			_name = name.toString();
+			_qName = name;
 			_target = target;
-			_accessor = accessor;
-			_value = _accessor.read( target, _qName );
+			_propertyAccessor = accessor.prop( _qName );
+			_value = _propertyAccessor
+				 ? _propertyAccessor.reader.read( target )
+				 : null;
 			checkListeners();
 		}
 		
@@ -70,7 +70,7 @@ package nanosome.notify.bind.impl {
 			removeListeners();
 			_childPropertyWatcherMap = null;
 			_target = null;
-			_accessor = null;
+			_propertyAccessor = null;
 			_parent = null;
 			super.dispose();
 		}
@@ -80,7 +80,7 @@ package nanosome.notify.bind.impl {
 				removeListeners();
 				
 				_target = target;
-				_accessor = accessor;
+				_propertyAccessor = accessor.prop( _qName );
 				
 				if( !_target ) {
 					internalValue = null;
@@ -108,7 +108,7 @@ package nanosome.notify.bind.impl {
 		}
 		
 		override public function setValue( value: * ): Boolean {
-			if( _accessor.write( _target, _qName, value ) ) {
+			if( _propertyAccessor && _propertyAccessor.writer.write( _target, value ) ) {
 				check();
 				return true;
 			} else {
@@ -116,12 +116,12 @@ package nanosome.notify.bind.impl {
 			}
 		}
 		
-		public function property( name: String ): WatchField {
+		public function property( name: QName ): WatchField {
 			if( !_childPropertyWatcherMap ) {
 				_childPropertyWatcherMap = new Dictionary( true );
 			} else {
 				for( var propertyWatcher: * in _childPropertyWatcherMap ) {
-					if( WatchField( propertyWatcher )._fullName == name ) {
+					if( WatchField( propertyWatcher )._qName == name ) {
 						return propertyWatcher;
 					}
 				}
@@ -129,7 +129,7 @@ package nanosome.notify.bind.impl {
 			if( !_valueAccessor ) {
 				_valueAccessor = accessFor( _value );
 			}
-			propertyWatcher = new WatchField( _value, _valueAccessor, name, _fullPath + "." + name, this );
+			propertyWatcher = new WatchField( _value, _valueAccessor, name, this );
 			_childPropertyWatcherMap[ propertyWatcher ] = true;
 			checkListeners();
 			EveryNowAndThen.add( checkPropertyWatcher );
@@ -146,7 +146,7 @@ package nanosome.notify.bind.impl {
 		}
 		
 		private function checkListeners(): void {
-			var needsListening: Boolean = ( _childPropertyWatcherMap != null || hasObservers );
+			var needsListening: Boolean = _propertyAccessor && ( _childPropertyWatcherMap != null || hasObservers );
 			if( _isListening != needsListening ) {
 				if( needsListening ) {
 					PROTECT_FROM_GARBAGE_COLLECTION[ uid ] = this;
@@ -160,37 +160,59 @@ package nanosome.notify.bind.impl {
 		
 		private function addListeners(): void {
 			_isListening = true;
+			var event: String;
 			if( _target is IField ) {
 				IField( _target ).addObserver( this );
-			} else if( _target is IEventDispatcher && _accessor.isBindable( _fullName ) ) {
-				IEventDispatcher( _target ).addEventListener( "propertyChange", 
-					onPropertyChanged );
-			} else if( _target is IPropertyObservable && _accessor.isObservable( _fullName ) ) {
-				IPropertyObservable( _target ).addPropertyObserver( this );
-			} else {
-				ENTER_FRAME_CHECK_LIST.add( check );
+				return;
+			} else if( _propertyAccessor ) {
+				if( _target is IPropertyObservable && _propertyAccessor.reader.observable ) {
+					IPropertyObservable( _target ).addPropertyObserver( this );
+					return; 
+				}
+				if( _target is IEventDispatcher ) {
+					if( _propertyAccessor.reader.bindable ) {
+						IEventDispatcher( _target ).addEventListener( "propertyChange", 
+							onPropertyChanged );
+						return;
+					} else if ( ( event = _propertyAccessor.reader.sendingEvent ) ) {
+						IEventDispatcher( _target ).addEventListener( event, check );
+						return;
+					}
+				}
 			}
+			ENTER_FRAME_CHECK_LIST.add( check );
 		}
 		
 		private function removeListeners(): void {
 			_isListening = false;
+			var event: String;
 			if( _target is IField ) {
 				IField( _target ).removeObserver( this );
-			} else if( _target is IEventDispatcher && _accessor.isBindable( _fullName ) ) {
-				IEventDispatcher( _target ).removeEventListener( "propertyChange", 
-					onPropertyChanged );
-			} else if( _target is IPropertyObservable && _accessor.isObservable( _fullName ) ) {
-				IPropertyObservable( _target ).removePropertyObserver( this );
-			} else {
-				ENTER_FRAME_CHECK_LIST.remove( check );
+				return;
+			} else if( _propertyAccessor ) {
+				if( _target is IPropertyObservable && _propertyAccessor.reader.observable ) {
+					IPropertyObservable( _target ).removePropertyObserver( this );
+					return; 
+				}
+				if( _target is IEventDispatcher ) {
+					if( _propertyAccessor.reader.bindable ) {
+						IEventDispatcher( _target ).removeEventListener( "propertyChange", 
+							onPropertyChanged );
+						return;
+					} else if ( ( event = _propertyAccessor.reader.sendingEvent ) ) {
+						IEventDispatcher( _target ).removeEventListener( event, check );
+						return;
+					}
+				}
 			}
+			ENTER_FRAME_CHECK_LIST.remove( check );
 		}
 		
 		private function onPropertyChanged( event: * ): void {
 			// The event will be of type PropertyChangeEvent. But if it would be
 			// linked to that type there would be unnecessary requirement to the
 			// Flex framework, so that should be kept untyped!
-			if( event["property"] == _fullName ) {
+			if( event["property"] == _name ) {
 				internalValue = event["newValue"];
 			}
 		}
@@ -228,7 +250,7 @@ package nanosome.notify.bind.impl {
 		
 		private function check( e: * = null ): void {
 			e;
-			var newValue: * = _accessor.read( _target, _qName );
+			var newValue: * = _propertyAccessor.reader.read( _target );
 			if( _value != newValue ) {
 				internalValue = newValue;
 			}
@@ -238,8 +260,8 @@ package nanosome.notify.bind.impl {
 			return _fullPath;
 		}
 		
-		public function get lastSegment(): String {
-			return _fullName;
+		public function get lastSegment(): QName {
+			return _qName;
 		}
 		
 		public function get object(): * {

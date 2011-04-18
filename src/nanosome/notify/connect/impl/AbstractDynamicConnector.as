@@ -1,5 +1,4 @@
 package nanosome.notify.connect.impl {
-	import nanosome.util.access.qname;
 	import nanosome.notify.field.IField;
 	import nanosome.notify.field.IFieldObserver;
 	import nanosome.notify.observe.IPropertyObservable;
@@ -11,6 +10,11 @@ package nanosome.notify.connect.impl {
 	import nanosome.util.access.Accessor;
 	import nanosome.util.access.Changes;
 	import nanosome.util.access.DELETED;
+	import nanosome.util.access.PropertyAccess;
+	import nanosome.util.access.qname;
+	import nanosome.util.access.readAll;
+	import nanosome.util.access.refreshStorage;
+	import nanosome.util.access.writeAllByNodes;
 	import nanosome.util.cleanObject;
 	import nanosome.util.pool.IInstancePool;
 	import nanosome.util.pool.WeakDictionary;
@@ -18,6 +22,7 @@ package nanosome.notify.connect.impl {
 
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
+	import flash.utils.Dictionary;
 	
 	/**
 	 * @author Martin Heidegger mh@leichtgewicht.at
@@ -27,8 +32,6 @@ package nanosome.notify.connect.impl {
 		protected static const objPool: IInstancePool = poolFor( Object );
 		protected static const weakPool: IInstancePool = WeakDictionary.POOL;
 		protected static const changePool: IInstancePool = poolFor( ChangedPropertyNode );
-		
-		private static const EMPTY_OBJECT: Object = {};
 		
 		protected var _objectA: Object;
 		protected var _objectB: Object;
@@ -58,12 +61,11 @@ package nanosome.notify.connect.impl {
 			_objectB = objectB;
 			
 			
-			if( ( _checkA = mapping.nonEventSending ) || mapping.source.isDynamic ) {
-				_cacheA = createCache( objectA, "a", _checkA, mapping.source );
-			}
-			if( ( _checkB = _mappingInv.nonEventSending ) || mapping.target.isDynamic ) {
-				_cacheB = createCache( objectB, "b", _checkB, mapping.target );
-			}
+			_checkA = mapping.isEntirelyDynamic ? mapping.source.readAndWritableProperties : _mapping.nonEventSending;
+			_cacheA = createCache( objectA, "a", _checkA, mapping.isEntirelyDynamic );
+			
+			_checkB = mapping.isEntirelyDynamic ? mapping.target.readAndWritableProperties : _mappingInv.nonEventSending;
+			_cacheB = createCache( objectB, "b", _checkB, mapping.isEntirelyDynamic );
 			
 			if( !_cacheA && _cacheB ) {
 				// Invert the objects for sake of simplicity
@@ -98,7 +100,7 @@ package nanosome.notify.connect.impl {
 					map = _mappingInv.propertyMap;
 					for( property in _cacheB ) {
 						targetProperty = map[ property ] || property;
-						if( !_objectA.hasOwnProperty( targetProperty ) ) {
+						if( !_objectA.hasOwnProperty( qname( targetProperty ) ) ) {
 							changes.oldValues[ targetProperty ] = _cacheB[ property ];
 							changes.newValues[ targetProperty ] = DELETED;
 							delete _cacheB[ property ];
@@ -106,17 +108,20 @@ package nanosome.notify.connect.impl {
 					}
 				}
 				if( changes ) {
-					
 					applyChanges( changes, _objectA, _cacheA, _objectB, _cacheB,
 									mapping, "a", "b" );
 				}
-				
 			}
+			
 			var notChanged: Array = mapping.copyAll( _objectA, _objectB );
 			if( notChanged ) {
 				var i: int = notChanged.length;
 				while( --i-(-1) ) {
-					mapping.source.write( _objectA, notChanged[ i ], 0 );
+					var target: PropertyAccess = _mapping.target.prop( notChanged[ i ] );
+					var source: PropertyAccess = _mappingInv.propertyMap[ target ];
+					if( source ) {
+						source.writer.write( _objectA, 0 );
+					}
 				}
 			}
 			
@@ -162,26 +167,43 @@ package nanosome.notify.connect.impl {
 			EnterFrame.remove( compareCacheWithReality );
 		}
 		
-		protected function createCache( object: *, idBase: String, nonEventSending: Array, accessor: Accessor ): Object {
-			var cache: Object = accessor.readAll( object, nonEventSending );
-			
+		protected function createCache( object: *, idBase: String, fromProperties: Array, addDynamic: Boolean ): Object {
+			var cache: Object = {};
+			var value: *;
 			var property: String;
-			for( property in cache ) {
-				var value: * = cache[ property ];
-				if( value is IField ) {
-					addField( value, idBase + property );
+			var readProperties: Object = objPool.getOrCreate();
+			if( fromProperties ) {
+				var i: int = fromProperties.length;
+				while( --i-(-1) ) {
+					var access: PropertyAccess = PropertyAccess( fromProperties[ i ] );
+					value = access.reader.read( object );
+					readProperties[ access.qName.toString() ] = true;
+					if( value is IField ) {
+						addField( value, idBase + property );
+					}
+					cache[ access.qName.toString() ] = value;
 				}
 			}
-			
+			if( addDynamic ) {
+				for( property in object ) {
+					if( !readProperties[ property ] ) {
+						value = object[ property ];
+						if( value is IField ) {
+							addField( value, idBase + property );
+						}
+						cache[ property ] = value;
+					}
+				}
+			}
 			return cache;
 		}
 		
 		protected function compareCacheWithReality(): void {
-			var changesA: Changes = _mapping.source.updateStorage( _objectA, _cacheA, _checkA );
+			var changesA: Changes = refreshStorage( _objectA, _cacheA, _checkA, _mapping.source );
 			var changesB: Changes = null;
 			
 			if( _cacheB )
-				changesB = _mapping.target.updateStorage( _objectB, _cacheB, _checkB );
+				changesB = refreshStorage( _objectB, _cacheB, _checkB, _mapping.target );
 			
 			if( changesA )
 				applyChanges( changesA, _objectA, _cacheA, _objectB, _cacheB,
@@ -208,53 +230,59 @@ package nanosome.notify.connect.impl {
 			}
 			
 			const sourceAccess: Accessor = mapping.source;
-			const targetAccess: Accessor = mapping.target;
-			const map: Object = mapping.propertyMap || EMPTY_OBJECT;
+			const map: Dictionary = mapping.propertyMap || EMPTY_OBJECT;
 			for( var property: String in changes.newValues ) {
 				
-				var targetQName: QName = map[ property ] || qname( property );
-				
-				if( otherChanges ) {
-					delete otherChanges.newValues[ targetQName.toString() ];
-					delete otherChanges.oldValues[ targetQName.toString() ];
-				}
-				
-				var newValue: * = changes.newValues[ property ];
-				var oldValue: * = changes.oldValues[ property ];
-				
-				// Remove any old field
-				if( oldValue is IField ) {
-					removeField( oldValue, idBase + property );
-				}
-				
-				if( targetCache ) {
-					oldValue = targetCache[ targetQName.toString() ];
+				var sourceProperty: PropertyAccess = sourceAccess.prop( property );
+				if( sourceProperty ) {
+					var targetPropAccess: PropertyAccess = map[ sourceProperty ] || sourceProperty;
+					var targetQName: QName = targetPropAccess.qName;
+					
+					// If two changed for the same value it kinda sucks.
+					if( otherChanges ) {
+						delete otherChanges.newValues[ targetQName.toString() ];
+						delete otherChanges.oldValues[ targetQName.toString() ];
+					}
+					
+					var newValue: * = changes.newValues[ property ];
+					var oldValue: * = changes.oldValues[ property ];
+					
+					// Remove any old field
 					if( oldValue is IField ) {
-						removeField( oldValue, targetIDbase + property );
+						removeField( oldValue, idBase + property );
 					}
-				}
-				
-				var sourceSuccess: Boolean = true;
-				if( newValue === DELETED ) {
-					targetAccess.remove( target, targetQName );
-				} else {
-					if( !targetAccess.write( target, targetQName, newValue ) ) {
-						if( sourceAccess.write( source, qname( property ), 0 ) ) {
-							sourceSuccess = true;
-						} else {
-							sourceSuccess = false;
-							// warning?
+					
+					if( targetCache ) {
+						oldValue = targetCache[ targetQName.toString() ];
+						if( oldValue is IField ) {
+							removeField( oldValue, targetIDbase + property );
 						}
 					}
 					
-					targetCache[ targetQName.toString() ] = newValue;
-					cache[ property ] = newValue;
-					
-					if( newValue is IField ) {
-						if( sourceSuccess ) {
-							addField( newValue, idBase + property );
+					var sourceSuccess: Boolean = true;
+					var del: Object = DELETED;
+					if( newValue === del ) {
+						if( targetPropAccess ) targetPropAccess.writer.remove( target );
+					} else {
+						if( !targetPropAccess || !targetPropAccess.writer.write( target, newValue ) ) {
+							
+							if( sourceProperty.writer.write( source, 0 ) ) {
+								sourceSuccess = true;
+							} else {
+								sourceSuccess = false;
+								// warning?
+							}
 						}
-						addField( newValue, targetIDbase + targetQName.toString() );
+						
+						targetCache[ targetQName.toString() ] = newValue;
+						cache[ property ] = newValue;
+						
+						if( newValue is IField ) {
+							if( sourceSuccess ) {
+								addField( newValue, idBase + property );
+							}
+							addField( newValue, targetIDbase + targetQName.toString() );
+						}
 					}
 				}
 			}
@@ -330,11 +358,11 @@ package nanosome.notify.connect.impl {
 				target = _objectA;
 			}
 			
-			var targetPropertyName: QName = map.propertyMap[ propertyName.toString() ];
-			if( targetPropertyName ) {
-				if( !map.target.write( target, targetPropertyName, newValue ) ) {
-					map.source.write( source, propertyName, map.target.read( target, targetPropertyName ) );
-				}
+			var targetProperty: PropertyAccess = map.propertyMap[ map.source.prop( propertyName ) ];
+			if( targetProperty && !targetProperty.writer.write( target, newValue ) ) {
+				map.source.prop( propertyName ).writer.write(
+					source, targetProperty.reader.read( target )
+				);
 			}
 		}
 		
@@ -348,19 +376,21 @@ package nanosome.notify.connect.impl {
 				map = _mappingInv;
 				target = _objectA;
 			}
-			var notChanged: Array = map.target.writeAllByNodes( target, changes, map.propertyMap );
+			var notChanged: Array = writeAllByNodes( target, changes, map.propertyMap, map.target );
 			if( notChanged ) {
 				var i: int = notChanged.length;
 				while( --i-(-1) ) {
-					map.source.write( observable,  notChanged[ i ], 0 );
+					map.source.prop( notChanged[ i ] ).writer.write( observable, 0 );
 				}
 			}
 		}
 	}
 }
-
 import nanosome.util.access.Changes;
 import nanosome.util.pool.IInstancePool;
 import nanosome.util.pool.poolFor;
 
+import flash.utils.Dictionary;
+
 const CHANGES_POOL: IInstancePool = poolFor( Changes );
+const EMPTY_OBJECT: Dictionary = new Dictionary();

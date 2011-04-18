@@ -30,7 +30,7 @@ package nanosome.notify.bind {
 	 * @see nanosome.notify.bind#watch()
 	 * @version 1.0
 	 */
-	public function bind( objectA: *, pathA: String, objectB: *, pathB: String, bidirectional: Boolean = true ): IField {
+	public function bind( objectA: *, pathA: *, objectB: *, pathB: *, bidirectional: Boolean = true ): IField {
 		return BINDER.bind( watch( objectA, pathA ), watch( objectB, pathB ), bidirectional );
 	}
 }

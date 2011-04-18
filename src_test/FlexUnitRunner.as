@@ -1,4 +1,5 @@
 package {
+	import nanosome.notify.connect.StaticConnectionTest;
 	import nanosome.notify.field.SpriteTest;
 	import nanosome.notify.field.expr.ExpressionTest;
 	import nanosome.notify.connect.DynamicConnectionTest;
@@ -34,6 +35,7 @@ package {
 				FieldTest,
 				PropertyBroadcasterTest,
 				DynamicConnectionTest,
+				StaticConnectionTest,
 				ExpressionTest,
 				SpriteTest
 			] );

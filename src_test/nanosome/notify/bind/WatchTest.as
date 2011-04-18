@@ -1,4 +1,7 @@
 package nanosome.notify.bind {
+	import nanosome.util.access.qname;
+	import nanosome.notify.bind.impl.WatchField;
+	import nanosome.notify.bind.impl.path;
 	import nanosome.notify.field.IFieldObserver;
 	import nanosome.util.EnterFrame;
 
@@ -19,7 +22,9 @@ package nanosome.notify.bind {
 		private var _dynamicInstance : DynamicClass;
 		private var _arr1 : Array;
 		private var _arr2 : Array;
-		private var _arr3 : Array;
+		private var _arr3: Array;
+		private var _nsSample: NamespaceSample;
+		private var _watchedField : IWatchField;
 		
 		public function WatchTest() {
 			super( [ IFieldObserver ] );
@@ -49,7 +54,24 @@ package nanosome.notify.bind {
 			_dynamicInstance.normal = _arr3;
 		}
 		
-		private function doubleBind( ...args: Array ): void {
+		public function testNamespaceWatch(): void {
+			_nsSample = new NamespaceSample();
+			
+			_watchedField = watch( _nsSample, path( qname("nanosome.notify.bind:sampleNs/test/$temp::test"), "length" ) );
+			_watchedField.addObserver( _mock );
+			assertEquals( "two times adressing the same field should return the same" +
+						"watchField", _watchedField,
+						watch( _nsSample, path( qname("nanosome.notify.bind:sampleNs/test/$temp::test"), "length" ) ) );
+			
+			_nsSample.sampleNS::test = "five";
+			
+			async( verifyNS1 );
+			EnterFrame.add( callBack );
+		}
+		
+		private function verifyNS1( e: Event ): void {
+			inOrder().verify().that( _mock.onFieldChange( _watchedField, null, 4 ) );
+			lastCall();
 		}
 		
 		/*

@@ -1,10 +1,13 @@
+// @license@
 package nanosome.notify.bind.map {
+	
+	import nanosome.util.access.typeMatches;
+	import nanosome.util.access.PropertyAccess;
 	import nanosome.util.access.accessFor;
 	import nanosome.util.access.Accessor;
 	import nanosome.notify.field.Field;
 	
 	import nanosome.util.invertObject;
-
 	
 	/**
 	 * @author Martin Heidegger mh@leichtgewicht.at
@@ -86,12 +89,12 @@ package nanosome.notify.bind.map {
 		}
 		
 		private function autoMap( source: Accessor, target: Accessor ): Object {
-			var propA: Array = source.properties;
+			var propertiesOfA: Array = source.readAndWritableProperties;
 			var map: Object = {};
-			for each( var propertyName: String in propA ) {
-				var typeA: Class = source.getPropertyType( propertyName );
-				var typeB: Class = target.getPropertyType( propertyName );
-				if( typeA == typeB ) {
+			for each( var propertyName: String in propertiesOfA ) {
+				var propA: PropertyAccess = source.prop( propertyName );
+				var propB: PropertyAccess = target.prop( propertyName );
+				if( typeMatches( propA.type, propB.type ) ) {
 					map[ propertyName ] = propertyName;
 				}
 			}

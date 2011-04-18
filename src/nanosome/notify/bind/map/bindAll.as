@@ -5,6 +5,12 @@ package nanosome.notify.bind.map {
 	import nanosome.util.access.accessFor;
 	
 	/**
+	 * 
+	 * @param source
+	 * @param target
+	 * @param bidirectional
+	 * @param sourceAccessor
+	 * @param targetAccessor 
 	 * @author Martin Heidegger mh@leichtgewicht.at
 	 * @version 1.0
 	 */

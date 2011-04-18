@@ -1,6 +1,7 @@
 // @license@ 
 package nanosome.notify.bind {
 	
+	import nanosome.notify.bind.impl.path;
 	import nanosome.notify.bind.impl.rootForObject;
 	import nanosome.notify.bind.impl.WatchField;
 	
@@ -30,13 +31,14 @@ package nanosome.notify.bind {
 	 * @see nanosome.notify.bind#unbind()
 	 * @see nanosome.util.EnterFrame
 	 */
-	public function watch( object: *, path: String ): IWatchField {
+	public function watch( object: *, path: * ): IWatchField {
+		
 		if( !path ) {
 			path = "";
 		}
 		
-		var pathList: Array = path.split( "." );
-		var propertyName: String = pathList.shift();
+		var pathList: Array = nanosome.notify.bind.impl.path( path );
+		var propertyName: QName = pathList.shift();
 		
 		var propertyMO: WatchField = rootForObject( object ).property( propertyName );
 		while( propertyName = pathList.shift() ) {

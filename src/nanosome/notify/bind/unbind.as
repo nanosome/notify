@@ -1,6 +1,6 @@
 // @license@ 
 package nanosome.notify.bind {
-
+	
 	import nanosome.notify.bind.impl.BINDER;
 	
 	/**

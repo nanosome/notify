@@ -2,9 +2,13 @@ package nanosome.notify.connect.impl {
 	import nanosome.notify.field.Field;
 	import nanosome.notify.field.IField;
 	import nanosome.util.access.Accessor;
-	import nanosome.util.access.qname;
+	import nanosome.util.access.PropertyAccess;
+	import nanosome.util.access.readMapped;
 	import nanosome.util.access.typeMatches;
+	import nanosome.util.access.writeAll;
 	import nanosome.util.invertObject;
+
+	import flash.utils.Dictionary;
 	
 
 	/**
@@ -19,10 +23,11 @@ package nanosome.notify.connect.impl {
 		private var _isEntirelyDynamic: Boolean = false;
 		
 		private var _fields: Object;
-		private var _propertyMap: Object;
+		private var _propertyMap: Dictionary;
 		private var _hasBindable: Boolean;
 		private var _hasObservable: Boolean;
 		private var _nonEvent: Array;
+		private var _syncLock: Boolean;
 		
 		public function MapInformation( source: Accessor, target: Accessor, propertyMapping: Object, inverted: MapInformation = null ) {
 			
@@ -34,44 +39,51 @@ package nanosome.notify.connect.impl {
 			super( propertyMapping );
 		}
 		
-		
-		override protected function notifyValueChange( oldValue: *, newValue: *) : void {
-			var properties: Array = null;
-			
-			if( _source.isDynamic ) {
-				if( _target.isDynamic ) {
-					properties = _source.properties;
-				} else {
-					properties = _target.properties;
-				}
+		override public function setValue( value: * ): Boolean {
+			if( !_syncLock ) {
+				return super.setValue( value );
 			} else {
-				properties = _source.properties;
+				return false;
 			}
-			
-			_fields = null;
-			
-			var propertyMap: Object = {};
-			var fields: Object;
+		}
+		
+		override protected function notifyValueChange( oldValue: *, newValue: * ): void {
+			var propertyMap: Dictionary = new Dictionary();
+			var fields: Object = null;
 			var nonEvent: Array;
+			var events: Object;
+			var event: String;
+			
 			_hasBindable = false;
 			_hasObservable = false;
 			
 			for( var sourceFullName: String in newValue ) {
 				var targetFullName: String = newValue[ sourceFullName ];
 				// Target and source should have same properties
-				var typeA: Class = _source.getPropertyType( sourceFullName );
-				var typeB: Class = _target.getPropertyType( targetFullName );
-				if( typeA is IField && typeB is IField ) {
-					( fields || ( fields = {}) )[ sourceFullName ] = targetFullName;
-				}
-				if( typeMatches( typeA, typeB ) ) {
-					propertyMap[ sourceFullName ] = qname( targetFullName );
-					if( _source.isObservable( sourceFullName ) ) {
-						_hasObservable = true;
-					} else if( _source.isBindable( sourceFullName ) ) {
-						_hasBindable = true;
+				var accessA: PropertyAccess = _source.prop( sourceFullName );
+				var accessB: PropertyAccess = _target.prop( targetFullName );
+				if( accessA && accessB ) {
+					if( accessA.type is IField && accessB.type is IField ) {
+						( fields || ( fields = {}) )[ sourceFullName ] = targetFullName;
+					}
+					if( typeMatches( accessA.type, accessB.type ) ) {
+						propertyMap[ accessA ] = accessB;
+						if( accessA.reader.observable ) {
+							_hasObservable = true;
+						} else if( accessA.reader.bindable ) {
+							_hasBindable = true;
+						} else if( ( event = accessA.reader.sendingEvent ) ) {
+							var eventPropMapping: Array = ( events || (events = {}) )[ event ];
+							if( !eventPropMapping ) {
+								eventPropMapping = events[ event ] = [];
+							}
+							eventPropMapping.push( accessA );
+						} else {
+							( nonEvent || (nonEvent = []) ).push( accessA );
+						}
 					} else {
-						( nonEvent || (nonEvent = []) ).push( qname( sourceFullName ) );
+						trace( "!!! Warning: '" + sourceFullName + "' and '" + targetFullName + "' are "
+								+ "not of the same type, mapping information will be dismissed!" );
 					}
 				}
 			}
@@ -80,6 +92,12 @@ package nanosome.notify.connect.impl {
 			_fields = fields;
 			_propertyMap = propertyMap;
 			super.notifyValueChange( oldValue, newValue );
+			
+			if( _inverted ) {
+				_syncLock = true;
+				_inverted.value = invertObject( newValue );
+				_syncLock = false;
+			}
 		}
 		
 		public function get inverted(): MapInformation {
@@ -94,7 +112,7 @@ package nanosome.notify.connect.impl {
 			return _target;
 		}
 		
-		public function get propertyMap(): Object {
+		public function get propertyMap(): Dictionary {
 			return _propertyMap;
 		}
 		
@@ -119,7 +137,7 @@ package nanosome.notify.connect.impl {
 		}
 		
 		public function copyAll( source: *, target: * ): Array {
-			return _target.writeAll( target, _source.readMapped( source, _propertyMap ) );
+			return writeAll( target, readMapped( source, _propertyMap, _source ), _target );
 		}
 	}
 }

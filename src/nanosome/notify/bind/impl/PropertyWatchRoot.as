@@ -1,4 +1,4 @@
-// @license@ 
+// @license@
 package nanosome.notify.bind.impl {
 	
 	import nanosome.util.UID;
@@ -20,7 +20,7 @@ package nanosome.notify.bind.impl {
 			_target = target;
 		}
 		
-		public function property( name: String ): WatchField {
+		public function property( name: QName ): WatchField {
 			if( !_accessor ) {
 				_accessor = accessFor( _target );
 			}
@@ -36,7 +36,7 @@ package nanosome.notify.bind.impl {
 				}
 			}
 			
-			propertyWatcher = new WatchField( _target, _accessor, name, name, this );
+			propertyWatcher = new WatchField( _target, _accessor, name, this );
 			
 			_propertyWatcherMap[ propertyWatcher ] = true;
 			

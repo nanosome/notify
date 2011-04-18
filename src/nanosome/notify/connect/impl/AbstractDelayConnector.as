@@ -1,10 +1,10 @@
 package nanosome.notify.connect.impl {
 	
-	import nanosome.util.access.qname;
 	import nanosome.util.ChangedPropertyNode;
 	import nanosome.util.EnterFrame;
 	import nanosome.util.ILockable;
 	import nanosome.util.access.Accessor;
+	import nanosome.util.access.PropertyAccess;
 	import nanosome.util.cleanObject;
 
 	/**
@@ -70,11 +70,12 @@ package nanosome.notify.connect.impl {
 		}
 		
 		protected function applyChanges(): void {
-			
-			var propName: String;
+			var propName: *;
 			var map: Object;
 			var accessA: Accessor = _mapping.source;
 			var accessB: Accessor = _mapping.target;
+			var propA: PropertyAccess;
+			var propB: PropertyAccess;
 			
 			if( _changesA ) {
 				
@@ -90,9 +91,11 @@ package nanosome.notify.connect.impl {
 				if( _changesB ) {
 					map = _mapping.propertyMap;
 					for( propName in _changesA ) {
+						propA = accessA.prop( propName );
+						propB = accessB.prop( map[ propName ] );
 						delete _changesB[ propName ];
-						if( !accessB.write( _objectB, map[ propName ], _changesA[ propName ] ) ) {
-							accessA.write( _objectA, qname( propName ), accessB.read( _objectB, map[ propName ] ) );
+						if( !propB.writer.write( _objectB, _changesA[ propName ] ) ) {
+							propA.writer.write( _objectA, propB.reader.read( _objectB ) );
 						}
 						delete _changesA[ propName ];
 					}
@@ -118,8 +121,10 @@ package nanosome.notify.connect.impl {
 				
 				map = _mappingInv.propertyMap;
 				for( propName in _changesB ) {
-					if( !accessA.write( _objectA, map[ propName ], _changesB[ propName ] ) ) {
-						accessB.write( _objectB, qname( propName ), accessA.read( _objectA, map[ propName ] ) );
+					propA = accessA.prop( propName );
+					propB = accessB.prop( map[ propName ] );
+					if( !propA.writer.write( _objectA, _changesA[ propName ] ) ) {
+						propB.writer.write( _objectB, propA.reader.read( _objectA ) );
 					}
 					delete _changesB[ propName ];
 				}

@@ -1,20 +1,12 @@
 // @license@ 
 package nanosome.notify.observe {
-	import nanosome.util.access.qname;
+	
 	import nanosome.util.ChangedPropertyNode;
-	import nanosome.util.EnterFrame;
 	import nanosome.util.ILockable;
-	import nanosome.util.access.Accessor;
-	import nanosome.util.access.Changes;
-	import nanosome.util.access.accessFor;
 	import nanosome.util.list.List;
 	import nanosome.util.list.ListNode;
 	import nanosome.util.pool.IInstancePool;
 	import nanosome.util.pool.poolFor;
-
-	import flash.events.Event;
-	import flash.events.IEventDispatcher;
-	
 	
 	/**
 	 * <code>PropertyBroadcaster</code> is a <strong>util</strong> to implement
@@ -58,12 +50,6 @@ package nanosome.notify.observe {
 		
 		private var _locked: Boolean = false;
 		
-		private var _accessor: Accessor;
-		
-		private var _storage : Object;
-		private var _nonSendingFields : Array;
-		private var _observedFields : Array;
-		
 		/**
 		 * Creates a new instance of the <code>PropertyBroadcaster</code>
 		 * 
@@ -87,106 +73,11 @@ package nanosome.notify.observe {
 		}
 		
 		public function set target( target: * ): void {
-			if( _target != target ) {
-				if( _target && _target is IEventDispatcher ) {
-					IEventDispatcher( _target ).removeEventListener( "propertyChange", onPropertyChange );
-				}
-				_target = target;
-				_nonSendingFields = null;
-				if( _target ) {
-					_accessor = accessFor( _target );
-					if( _accessor.nonEventSendingProperties ) {
-						_nonSendingFields = _accessor.nonEventSendingProperties.concat();
-					}
-				} else {
-					_accessor = null;
-				}
-				checkListening();
-			}
+			_target = target;
 		}
 		
 		public function get target(): * {
 			return _target;
-		}
-		
-		private function checkListening(): void {
-			if( !empty && hasObserverToNonSendingField ) {
-				if( EnterFrame.add( checkNonEventSending ) ) {
-					_storage = _accessor.readAll( _target, _nonSendingFields );
-				}
-			} else {
-				_storage = null;
-				EnterFrame.remove( checkNonEventSending );
-			}
-			
-			if( _target is IEventDispatcher ) {
-				if( !empty && _accessor && _accessor.hasBindable ) {
-					IEventDispatcher( _target ).addEventListener( "propertChange", onPropertyChange );
-				} else {
-					IEventDispatcher( _target ).removeEventListener( "propertyChange", onPropertyChange );
-				}
-			}
-		}
-		
-		private function get hasObserverToNonSendingField(): Boolean {
-			if( _observedFields && _accessor ) {
-				var i: int = _observedFields.length;
-				while( --i - (-1) ) {
-					if( !_accessor.isSendingChangeEvent( _observedFields[i] ) ) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		
-		public function observeField( name: String ): void {
-			if( !_observedFields ) {
-				_observedFields = [];
-			}
-			if( _observedFields.indexOf( name ) == -1 ) {
-				_observedFields.push( name );
-				checkListening();
-			}
-		}
-		
-		public function unobserveField(name : String): void {
-			if( _observedFields ) {
-				var pos : int = _observedFields.indexOf(name);
-				if( pos != -1 ) {
-					_observedFields.splice(pos, 1);
-					if( _observedFields.length == 0 ) {
-						_observedFields = null;
-					}
-					checkListening();
-				}
-			}
-		}
-		
-		private function checkNonEventSending(): void {
-			var changes: Changes = _accessor.updateStorage( _target, _storage );
-			if( changes ) {
-				notifyManyPropertiesChanged( changesToNodes( changes ) );
-				CHANGES_POOL.returnInstance( changes );
-			}
-		}
-		
-		private function changesToNodes( changes: Changes ): ChangedPropertyNode {
-			var lastChange: ChangedPropertyNode;
-			var firstChange: ChangedPropertyNode;
-			for( var field: String in changes.newValues ) {
-				var change: ChangedPropertyNode = ChangedPropertyNode.POOL.getOrCreate();
-				change.name = qname( field );
-				change.newValue = changes.newValues[ field ];
-				change.oldValue = changes.oldValues[ field ];
-				lastChange = change.addTo( lastChange );
-				if( !firstChange ) firstChange = lastChange;
-			}
-			return firstChange;
-		}
-		
-		private function onPropertyChange( event: Event ): void {
-			notifyPropertyChange( event["property"], event["oldValue"], event["newValue"] );
 		}
 		
 		/**
@@ -405,7 +296,6 @@ package nanosome.notify.observe {
 		}
 	}
 }
-
 import nanosome.util.access.Changes;
 import nanosome.util.pool.IInstancePool;
 import nanosome.util.pool.poolFor;

@@ -16,6 +16,8 @@ package nanosome.notify.connect {
 		private var _call: Function;
 		private var _objB: Object;
 		private var _objA: Object;
+		private var _dictA: Dynamic1;
+		private var _dictB: Dynamic2;
 		
 		private function async( fnc: Function) : void {
 			_call = addAsync( fnc, 1000 );
@@ -103,11 +105,11 @@ package nanosome.notify.connect {
 		}
 		
 		public function testMapping(): void {
-			_objA = new Dynamic1();
-			_objA["e"] = 7;
-			_objB = new Dynamic2();
-			_objB["e"] = 8;
-			_objB["f"] = 9;
+			_dictA = new Dynamic1();
+			_dictA["e"] = 7;
+			_dictB = new Dynamic2();
+			_dictB["e"] = 8;
+			_dictB["f"] = 9;
 			
 			CLASS_MAPPINGS.addMapping( Dynamic1, Dynamic2, {
 				a: "a",
@@ -119,38 +121,38 @@ package nanosome.notify.connect {
 				i: "z"
 			} );
 			
-			assertTrue( connect( _objA, _objB ) );
+			assertTrue( connect( _dictA, _dictB ) );
 			
-			assertEquals( "1", _objA["a"] );
-			assertEquals( "2", _objA["b"] );
-			assertStrictlyEquals( 3, _objA["c"] );
-			assertEquals( 7, _objA["e"] );
-			assertFalse( _objA.hasOwnProperty("f") );
-			assertStrictlyEquals( "0", _objA["g"] );
-			assertEquals( "15", _objA["h"] );
-			assertEquals( 16, _objA["i"] );
+			assertEquals( "1", _dictA.a );
+			assertEquals( "2", _dictA.b );
+			assertStrictlyEquals( 3, _dictA.c );
+			assertEquals( 7, _dictA["e"] );
+			assertFalse( _dictA.hasOwnProperty("f") );
+			assertStrictlyEquals( "0", _dictA.g );
+			assertEquals( "15", _dictA.h );
+			assertEquals( 16, _dictA.i );
 			
-			assertEquals( "1", _objB["a"] );
-			assertEquals( "2", _objB["x"] );
-			assertStrictlyEquals( "3", _objB["c"] );
-			assertEquals( 7, _objA["e"] );
+			assertEquals( "1", _dictB.a );
+			assertEquals( "2", _dictB.x );
+			assertStrictlyEquals( "3", _dictB.c );
+			assertEquals( 7, _dictA["e"] );
 			
-			assertFalse( _objB.hasOwnProperty("f") );
-			assertStrictlyEquals( 0, _objB["g"] );
-			assertEquals( 15, _objB["y"] );
-			assertEquals( "16", _objB["z"] );
+			assertFalse( _dictB.hasOwnProperty("f") );
+			assertStrictlyEquals( 0, _dictB.g );
+			assertEquals( 15, _dictB.y );
+			assertEquals( "16", _dictB.z );
 			
 			
-			_objA["g"] = "x";
-			_objB["g"] = 3;
+			_dictA.g = "x";
+			_dictB.g = 3;
 			
-			assertStrictlyEquals( "x", _objA["g"] );
-			assertStrictlyEquals( 3, _objB["g"] );
+			assertStrictlyEquals( "x", _dictA.g );
+			assertStrictlyEquals( 3, _dictB.g );
 			
-			_objA["h"] = "17";
+			_dictA.h = "17";
 			
-			assertEquals( 17, _objB["y"] );
-			assertEquals( "17", _objA["h"] );
+			assertEquals( 17, _dictB.y );
+			assertEquals( "17", _dictA.h );
 			
 			async( verifyMappingChange );
 			EnterFrame.add( callBack );
@@ -158,10 +160,10 @@ package nanosome.notify.connect {
 		
 		private function verifyMappingChange( e: Event ): void {
 			
-			assertStrictlyEquals( "0", _objA["g"] );
-			assertStrictlyEquals( 0, _objB["g"] );
+			assertStrictlyEquals( "0", _dictA.g );
+			assertStrictlyEquals( 0, _dictB.g );
 			
-			disconnect( _objA, _objB );
+			disconnect( _dictA, _dictB );
 			
 			lastCall();
 		}
