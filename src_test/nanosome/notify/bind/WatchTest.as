@@ -1,9 +1,9 @@
 package nanosome.notify.bind {
-	import nanosome.util.access.qname;
-	import nanosome.notify.bind.impl.WatchField;
+	import nanosome.util.access.accessFor;
 	import nanosome.notify.bind.impl.path;
 	import nanosome.notify.field.IFieldObserver;
 	import nanosome.util.EnterFrame;
+	import nanosome.util.access.qname;
 
 	import org.mockito.integrations.flexunit3.MockitoTestCase;
 	import org.mockito.integrations.inOrder;
@@ -52,6 +52,18 @@ package nanosome.notify.bind {
 			_dynamicInstance.bindable = _arr1;
 			_dynamicInstance.observable = _arr2;
 			_dynamicInstance.normal = _arr3;
+		}
+		
+		public function testSpecialBindingEvent(): void {
+			_nsSample = new NamespaceSample();
+			var nsField: IWatchField = watch( _nsSample, "eventVar" );
+			nsField.addObserver( _mock );
+			_nsSample.eventVar = "hi";
+			inOrder().verify().that( _mock.onFieldChange( nsField, null, "hi" ) );
+			nsField = watch( _nsSample, new QName( sampleNS, "bindable" ) );
+			nsField.addObserver( _mock );
+			_nsSample.sampleNS::bindable = "ho";
+			inOrder().verify().that( _mock.onFieldChange( nsField, null, "ho" ) );
 		}
 		
 		public function testNamespaceWatch(): void {

@@ -12,7 +12,6 @@ package nanosome.notify.connect.impl {
 	import nanosome.util.access.DELETED;
 	import nanosome.util.access.PropertyAccess;
 	import nanosome.util.access.qname;
-	import nanosome.util.access.readAll;
 	import nanosome.util.access.refreshStorage;
 	import nanosome.util.access.writeAllByNodes;
 	import nanosome.util.cleanObject;
