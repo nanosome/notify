@@ -24,6 +24,7 @@ package nanosome.notify.bind {
 	 * @param pathB path that should be bound
 	 * @param bidirectional <code>true</code> if both should be notified of changes
 	 * 			of each other
+	 * @param clean <code>true</code> to clean former bindings
 	 * @return <code>IWatchField</code> for objectA.pathA.
 	 * @see nanosome.notify.bind.impl#BINDER
 	 * @see nanosome.notify.bind.impl.FieldBinder
@@ -31,7 +32,7 @@ package nanosome.notify.bind {
 	 * @see nanosome.notify.bind#path
 	 * @version 1.0
 	 */
-	public function bind( objectA: *, pathA: *, objectB: *, pathB: *, bidirectional: Boolean = true ): IField {
-		return BINDER.bind( watch( objectA, pathA ), watch( objectB, pathB ), bidirectional );
+	public function bind( objectA: *, pathA: *, objectB: *, pathB: *, bidirectional: Boolean = true, clean: Boolean = false ): IField {
+		return BINDER.bind( watch( objectA, pathA ), watch( objectB, pathB ), bidirectional, clean );
 	}
 }

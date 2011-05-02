@@ -109,7 +109,7 @@ package nanosome.notify.bind.impl {
 				while( current ) {
 					_next = current.nextNode;
 					if( field != current.field ) {
-						current.field.value = value;
+						current.field.setValue( value );
 					}
 					current = _next;
 				}

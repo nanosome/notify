@@ -39,9 +39,9 @@ package nanosome.notify.bind {
 		var pathList: Array = nanosome.notify.bind.path( path );
 		var propertyName: QName = pathList.shift();
 		
-		var propertyMO: WatchField = rootForObject( object ).property( propertyName );
+		var propertyMO: WatchField = rootForObject( object ).watch( propertyName );
 		while( propertyName = pathList.shift() ) {
-			propertyMO = propertyMO.property( propertyName );
+			propertyMO = propertyMO.watch( propertyName );
 		}
 		
 		return propertyMO;

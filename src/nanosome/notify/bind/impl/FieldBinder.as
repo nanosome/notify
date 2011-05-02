@@ -62,10 +62,14 @@ package nanosome.notify.bind.impl {
 		 * @param fieldA First <code>IField</code> to bind
 		 * @param fieldB Second <code>IField</code> to bind
 		 * @param bidirectional If set to false it will use the <code>fieldA</code> as master
+		 * @param clean <code>true</code> to clean former bindings
 		 * @return <code>fieldA</code> that was passed-in
 		 */
-		public function bind( fieldA: IField, fieldB: IField, bidirectional: Boolean = true ): IField {
+		public function bind( fieldA: IField, fieldB: IField, bidirectional: Boolean = true, clean: Boolean = false ): IField {
 			if( fieldA != null && fieldB != null ) {
+				if( clean ) {
+					unbind( fieldB );
+				}
 				var relationsA: FieldBindList = _relationMap[ fieldA ];
 				var relationsB: FieldBindList = _relationMap[ fieldB ];
 				if( relationsA ) {

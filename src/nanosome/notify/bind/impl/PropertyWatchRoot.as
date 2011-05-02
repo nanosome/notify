@@ -20,7 +20,7 @@ package nanosome.notify.bind.impl {
 			_target = target;
 		}
 		
-		public function property( name: QName ): WatchField {
+		public function watch( name: QName ): WatchField {
 			if( !_accessor ) {
 				_accessor = accessFor( _target );
 			}

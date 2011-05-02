@@ -1,6 +1,5 @@
 // @license@
 package nanosome.notify.bind.impl {
-	
 	import nanosome.notify.bind.IWatchField;
 	import nanosome.notify.field.Field;
 	import nanosome.notify.field.IField;
@@ -35,7 +34,7 @@ package nanosome.notify.bind.impl {
 		 */
 		private static const ENTER_FRAME_CHECK_LIST: FunctionList = new FunctionList();
 		{
-			EnterFrame.add( ENTER_FRAME_CHECK_LIST.execute );
+			EnterFrame.add( ENTER_FRAME_CHECK_LIST.executeStraight );
 		}
 		
 		private var _propertyAccessor: PropertyAccess;
@@ -93,7 +92,7 @@ package nanosome.notify.bind.impl {
 		}
 		
 		private function set internalValue( newValue: * ): void {
-			if( _value != newValue || ( newValue is Number && isNaN(newValue) && isNaN(_value) ) ) {
+			if( _value != newValue && !( newValue is Number && _value is Number && isNaN(newValue) && isNaN(_value) ) ) {
 				if( _childPropertyWatcherMap ) {
 					_valueAccessor = accessFor( newValue );
 					for( var changeWatcher: * in _childPropertyWatcherMap )
@@ -108,7 +107,7 @@ package nanosome.notify.bind.impl {
 		}
 		
 		override public function setValue( value: * ): Boolean {
-			if( _propertyAccessor && _propertyAccessor.writer.write( _target, value ) ) {
+			if( _propertyAccessor && value != _value && _propertyAccessor.writer.write( _target, value ) ) {
 				check();
 				return true;
 			} else {
@@ -116,7 +115,7 @@ package nanosome.notify.bind.impl {
 			}
 		}
 		
-		public function property( name: QName ): WatchField {
+		public function watch( name: QName ): WatchField {
 			if( !_childPropertyWatcherMap ) {
 				_childPropertyWatcherMap = new Dictionary( true );
 			} else {
